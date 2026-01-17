@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.pyc   
+instance/
+.vscode/
+migrations/
+backend/app/__pycache__/
+backend/app/models/__pycache__/
+backend/app/resolvers/__pycache__/
+backend/app/schemas/__pycache__/    
+backend/app/tests/__pycache__/
+backend/app/tests/data/
+backend/app/tests/results/  
+    

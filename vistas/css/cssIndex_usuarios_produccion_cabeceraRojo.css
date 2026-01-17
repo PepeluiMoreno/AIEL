@@ -1,0 +1,37 @@
+/**********************************************************************************************************************************
+FICHERO: cssIndex_usuarios_produccion_cabeceraRoja.css
+PROYECTO: EuropaLaica
+
+DESCRIPCION:  Se usa para Modificación para modificar el color del fondo por defecto (gris) de  "#cabecera" que contiene 
+              logos y texto cabecera se añade con  <link rel="stylesheet" href="<?php echo $linkCabeceraCSS ?>: 
+
+LLAMADO: vCabeceraInicial.php, vCabeceraSalir.php, vCabeceraBlank.php  
+
+OBSERVACIONES:                  
+"cabecera": que contiene logos y texto cabecera, tiene opciones comentadas para distintos colores de fondo, 
+que sirven para diferenciar las versiones de uso de la aplicación: usuarios,usuarios_copia,usuarios_desarrollo,usuarios_produccion  
+
+- "usuarios": la versión de pública de explotación (BBDD: europalaica_com).	background-color:#E9E9E9;	color gris			
+- "usuarios_copia": la versión de pruebas espejo de 'usuarios' (BBDD: europalaica_com_copia).	background-color:#3A6DAB;	color azul 
+											(en esta versión se copia la versión "usuarios" para hacer pruebas de funciones críticas: Cierre año, Remesas, etc...) 
+
+- "usuarios_desarrollo": la versión de desarrollo (BBDD: europalaica_com_desarrollo). background-color:#669999;	color verde	
+- "usuarios_produccion": la versión de prueba espejo de 'usuarios_desarrollo' (BBDD europalaica_com_produccion).	
+                         background-color:#F64262;	color rojo						
+
+NOTA: En "vCabeceraInicial.php, vCabeceraSalir.php, vCabeceraBlank.php" se añaden este CSS, para modificar el color del fondo de  
+"#cabecera" que contiene logos y texto cabecera:
+usuarios_copia (cssIndex_usuarios_copia_cabeceraAzul.css),usuarios_desarrollo (cssIndex_usuarios_copia_cabeceraVerde.css),
+usuarios_produccion (cssIndex_usuarios_copia_cabeceraRojo.css). Para ello requiere var PHP $_SERVER['SCRIPT_NAME']    
+***********************************************************************************************************************************/		
+
+/* cabecera: que contiene logos y texto cabecera, tiene opciones para distintos colores de fondo, que sirven para 
+   diferenciar las versiones de uso de la aplicación: usuarios,usuarios_copia,usuarios_desarrollo,usuarios_produccion */
+			
+#cabecera {
+  /* background-color:#E9E9E9;	 /* "usuarios": versión de pública de explotación (BBDD: europalaica_com).	color gris             */
+  /* background-color:#3A6DAB;		/* "usuarios_copia": la versión de prueba de 'usuarios'(BBDD: europalaica_com_copia).	color azul */					
+		/* background-color:#669999;		/* "usuarios_desarrollo": versión de desarrollo (BBDD: europalaica_com_desarrollo). color verde  */
+		  	background-color:#F64262;		/* "usuarios_produccion": versión de prueba de 'usuarios_desarrollo' 
+		                                 (BBDD europalaica_com_produccion).	color rojo                                                 */
+}

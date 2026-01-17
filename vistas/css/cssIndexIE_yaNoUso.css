@@ -1,0 +1,81 @@
+/********************************************************/
+/* FICHERO: cssIndexIEFuncionandoBien.css               */
+/* Solo para IExplorer                                  */
+/* Lo utilizo por los problemas que me da en "content1" */
+/* con las tablas de mostrar socios y cuotas            */
+/* Acaso se pueda hacer de otra forma, sin necesidad de */
+/* este css para IE                                     */
+/* Debería mejorarlo                                    */
+/********************************************************/
+
+/****** inicio DIFERENCIAS CON FF y Crome ******/
+
+/*content1: se pone variando el ancho para que las tablas */ 
+/*mostrar socios no se descoloquen                        */
+#content1{
+ /*float:right;*/
+	width: 96%;/*para que se extienda en la columna derecha*/
+/*margin-left: 200px;*/
+	/*margin-right: 10px;*/
+	/*margin-bottom: 20px;*/
+	height: inherit;
+	/*padding: 10 10 10 10;*/
+}
+
+#registro p label {font: 0.75em Trebuchet MS, Helvetica, sans-serif; float: left; 
+                   text-align: right; padding: 6px; color: #3A6DAB;}
+																			
+#registro p input {font: 0.8em Trebuchet MS, Helvetica, sans-serif, Verdana, Arial; float: left; height: 20px;
+                   text-align: left; border: 1px solid #dfe0ff; padding: 1px; color: #2c2c2c;}
+
+/* fin DIFERENCIAS CON FF y Chrome */
+/*- inicio de contenedores solo para admin, para probar columnas BORRAR -*/
+#container {  
+background-color: #fff;  
+overflow: hidden;  
+width: 780px;  
+/*width: 100%; */
+margin: 10px auto 5px auto;  
+border: 1px solid #000;  /* borde negro */
+} 
+#cont {  
+background-color: #fff;  
+width: 580px; 
+/*width: 79%; */
+ /* ancho y color del menú  
+border-right: 200px solid #0099FF;
+margin-right: -200px;  */ 
+border-left: 200px solid #0099FF;/*azul*/
+margin-left: -200px;
+/*float: left;*/  
+float: right;  
+}  
+
+#content {  
+background-color: #fff;  
+width: 580px; 
+/*width: 79%; */
+ /* ancho y color del menú  
+border-right: 200px solid #0099FF;
+margin-right: -200px;  */ 
+border-left: 200px solid #0099FF;/*azul*/
+margin-left: -200px;
+/*float: left;*/  
+float: right;  
+}  
+
+#menu  {  
+width: 200px; 
+/*width: 21%; */ 
+float: left;  
+/*color: #fff;  */
+color: #ffff00; /*texto del menu amarillo*/ 
+background: #ff00ff;  /*violeta para fondo menu*/
+text-align: left;  
+}
+#contentInterior {	
+	margin-left: 15px;
+	margin-right: 15px;	
+	text-align: left; 
+} 
+/*--- fin de contenedores para admin, para probar ----*/					 

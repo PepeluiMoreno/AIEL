@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(python -m venv:*)",
+      "Bash(venv/Scripts/activate)",
+      "Bash(pip install:*)",
+      "Bash(venv/Scripts/python:*)",
+      "Bash(nslookup:*)",
+      "Bash(dir /b c:UsersJosedevAIELbackendalembic)"
+    ]
+  }
+}

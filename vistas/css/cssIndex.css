@@ -1,0 +1,558 @@
+/**********************************************************************************************************************************
+FICHERO: cssIndex.css 
+PROYECTO: EuropaLaica
+
+DESCRIPCION: "usuarios": "cssIndex.css" la versión de pública de explotación (BBDD: europalaica_com).	
+              "cabecera fondo color gris".
+														Funciona bien con Mozilla, Crome, Edge, IE, Opera  (por ahora)
+
+LLAMADO: vCabeceraInicial.php, vCabeceraSalir.php, vCabeceraBlank.php, vError404.php	     
+
+OBSERVACIONES: 2016-04-11 modificaciones estilos para bootstrap y (padding en el div #secciones)
+               2021-03-17 modificaciones estilos para Textos (no todos se utilizan), habría que organizar mejor
+                 
+"cabecera": que contiene logos y texto cabecera, tiene opciones comentadas para distintos colores de fondo, 
+que sirven para diferenciar las versiones de uso de la aplicación: usuarios,usuarios_copia,usuarios_desarrollo,usuarios_produccion  
+																									
+NOTA: En "vCabeceraInicial.php, vCabeceraSalir.php, vCabeceraBlank.php" se añaden otros CSS, para modificar el color del fondo de  
+      "#cabecera" que contiene logos y texto cabecera, para para diferenciar las versiones de uso de la aplicación: 
+						usuarios_copia (cssIndex_usuarios_copia_cabeceraAzul.css),usuarios_desarrollo (cssIndex_usuarios_copia_cabeceraVerde.css),
+						usuarios_produccion (cssIndex_usuarios_copia_cabeceraRojo.css). Para ello requiere var PHP $_SERVER['SCRIPT_NAME']  
+						
+***********************************************************************************************************************************/		
+
+body{
+    font-family: Arial,sans-serif;
+    color: #333333;
+    line-height: 1.25; /* por defecto, pero mejor en cada sitio el propio       */
+    margin: 0px;       /* para que se acople por completo al borde de la ventana*/
+}
+
+/* cabecera: que contiene logos y texto cabecera, tiene opciones comentadas para distintos colores de fondo, que sirven para 
+   diferenciar las versiones de uso de la aplicación: usuarios,usuarios_copia,usuarios_desarrollo,usuarios_produccion */
+#cabecera {
+    margin:0 0 0 0px;
+     background-color:#E9E9E9;	 /* "usuarios": versión de pública de explotación (BBDD: europalaica_com).	color gris             */
+  /* background-color:#3A6DAB;		/* "usuarios_copia": la versión de prueba de 'usuarios'(BBDD: europalaica_com_copia).	color azul */					
+		/* background-color:#669999;		/* "usuarios_desarrollo": versión de desarrollo (BBDD: europalaica_com_desarrollo). color verde  */
+		/*	background-color:#F64262;		/* "usuarios_produccion": versión de prueba de 'usuarios_desarrollo' 
+		                                 (BBDD europalaica_com_produccion).	color rojo                                                 */
+}
+
+/****** para barra de cabecera con enlaces: entrar, nuevo,..salir **********/
+#sectionLinksBarCab{
+    background-color: #cccccc;
+    background-color: #73CC1A;
+    text-align: right;
+    margin: 0px;
+    padding: 0px 10px 0px 10px;
+}
+#sectionLinksBarCab a:link{ 
+    padding: 0px 10px 0px 10px;	
+    text-decoration: none	
+}
+#sectionLinksBarCab a:visited{
+    background-color: #dddddd;
+    padding: 0px 10px 0px 10px;
+    text-decoration: none;
+}
+#sectionLinksBarCab a:hover{
+    background-color: #ffffff;
+    padding: 0px 10px 0px 10px;
+    text-decoration: none;
+}
+
+/* en las páginas del pie: Privacidad, Contactar ,... que se abren con target="_blank" */
+div .blank{
+    padding: 5px; 
+    margin:30px; 
+    border: 0; 
+    text-align:justify;	
+}
+
+/*cuerpo: secciones(izda: Links)+ content1(formularios y mensajes)*/
+div .content0{ 
+    /*width: 100%;*/
+    margin: 0;
+    padding: 0;
+}
+
+/*--- contenedor menú izquierdo -----*/
+#secciones{/*con links y enlaces*/
+    background-color:#dae3f5;
+    padding: 0 0 40px 0;
+}
+
+
+/*content1: lado derecho, con formularios o mensajes      */
+/* en la directiva condicional para IE se pone width: 75%;*/
+#content1{
+    background-color:#ffffff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /*    margin-left: 22%;*/
+}
+
+/******** se utiliza para el pie de la pág. *********/
+
+#siteInfoPie{
+    clear: both;
+    border: 1px solid #cccccc;
+    font-size: 1.3rem;
+    color: #cccccc;
+    padding: 4px 10px 4px 10px;
+    margin-top: 0px;
+    margin-bottom: 10px;/*para que el pie quede un poco separado de la ventana*/
+}
+#siteInfoPie img{/*imagenes del pie: creo que no lo uso  */
+    padding: 4px 4px 4px 0px;
+    vertical-align: middle;
+}
+/************* #siteInfo styles ***************/
+#siteInfo{
+    clear: both;
+    border: 1px solid #cccccc;
+    font-size: 1.3rem;
+    color: #cccccc;
+    padding: 10px 10px 10px 10px;
+    margin-top: 0px;
+}
+
+
+/************* Inicio #registro Para Form  *************/
+#registro {
+    background-color: #ffffff; 
+    text-align: left;
+    margin:0.5rem; 
+    border: 0; /*border lo ignora FF y lo considera IE*/
+    background-color: #ffffff; 
+    text-align: left;
+}
+
+#registro form.linea {
+    display: inline;}/*para que los botones submit estén en línea*/
+
+#registro fieldset {
+    border: 1px solid #dfe0ff; 
+    /*    color: #ffffff; */
+    padding: 0.5rem;}
+
+#registro legend {
+    display: inline;
+    width:auto;
+    padding:0 0.6rem; 
+    font-size: 1.2rem; 
+    font-family: Verdana, sans-serif, Helvetica, Arial;
+    color: #3A6DAB; 
+    font-weight: bold; 
+    text-align: left;
+    border-bottom: 0;
+    margin: 0 0 0.5rem 0;
+}																		
+/*Verdana, Arial, Helvetica, sans-serif; ---Trebuchet MS, Helvetica, sans-serif*/
+
+label {
+    padding: 0.3rem 1.5rem 0.3rem 0.3rem; 
+    font: 1.2rem Trebuchet MS, Helvetica, sans-serif; 
+    float: left; 
+    text-align: right; 
+    color: #3A6DAB;
+    margin:1rem 0 0 0;
+}
+
+#registro p input {
+    margin:1rem 0.6rem 0 0.6rem;
+    padding: 1px; 
+    font: 1.2rem Verdana, sans-serif, Helvetica, Arial; 
+    float: left; 
+    /*    height: 20px;*/
+    text-align: left; 
+    border: 1px solid #dfe0ff; 
+    color: #2c2c2c;}
+
+#registro p input.linea { 
+    text-align: center; 
+}
+
+/* inicio mostrar: negro con fondo gris */																	
+.mostrar {
+    margin:1rem 0.6rem 0 0.6rem;
+    padding: 1px;
+    font: 1.2rem Verdana, sans-serif, Helvetica, Arial; 
+    float: left;
+    text-align: left;
+    border: 1px solid #dfe0ff;
+    color: #2c2c2c; 
+    background: #d2d2d2; 
+    font-weight: 400;
+}																		
+/* fin mostrar: negro con fondo gris */	
+
+#registro p select {
+    margin:1rem 0.6rem 0 0.6rem;
+    padding: 1px; 
+    font: 1.2rem Verdana, sans-serif, Helvetica, Arial; 
+    float: left; 
+    /*    height: 21px;width: 22%; */
+    text-align: left; 
+    border: 1px solid #dfe0ff; 
+    color: #2c2c2c;}
+
+#registro p textarea {
+    padding: 1px; 
+    font: 1.1rem Verdana, sans-serif, Helvetica, Arial; 
+    float: left; 
+    text-align: left; 
+    border: 1px solid #dfe0ff; 
+    color: #2c2c2c;}
+
+#registro p textarea.mostrar1 {
+    padding: 1px; 
+    font: Verdana, sans-serif, Helvetica, Arial; 
+    float: left;
+    text-align: left; 
+    border: 1px solid #dfe0ff; 
+    color: #2c2c2c; 
+    background: #d2d2d2;}
+
+#registro p br {clear: left;}
+
+
+#registro span.error {
+    /*    padding: 3px; */
+    font: 1rem Verdana, sans-serif, Helvetica, Arial; 
+    float: left; /*width: 22%; */
+    text-align: left; 
+    color: #cc0000;}
+
+#registro span.comentario11 {
+    /*    padding: 3px; */
+    margin:1rem 0.6rem 0 0.6rem;
+    font: 1.1rem Verdana, sans-serif, Helvetica, Arial; 
+    float: left; /*width: 22%; */
+    text-align: left; 
+    color: #3A6DAB; 
+    line-height: 1.4em;}
+				
+#registro span.comentario12 {
+    /*    padding: 3px; */
+    margin:1rem 0.6rem 0 0.6rem;
+    font: 1.2rem Verdana, sans-serif, Helvetica, Arial; 
+    float: left; /*width: 22%; */
+    text-align: left; 
+    color: #3A6DAB; 
+    line-height: 1.4em;}							
+
+
+/************* fin #registro Para Form *******/
+
+
+/**************** para que los botones submit estén en línea ************************/
+#formLinea {padding: 5px; margin:5px; border: 0; text-align:center; 
+            background-color: #ffffff;}
+#formLinea form.linea {display: inline;}/*para que los botones submit estén en línea*/
+
+.enviar {margin: 3px 0 0 3px;}
+
+
+/*******************************************/
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Arial,sans-serif;
+    margin: 0px;
+    padding: 0px;
+}
+
+h3{
+    font-size: 1.4rem;
+    color: #3A6DAB;
+    font-weight: bold;
+}
+
+
+li {
+    font: 11px Verdana, sans-serif, Helvetica, Arial; 
+    text-align: left; padding: 3px; color: #3A6DAB; 
+}	
+
+ul .izda{
+    padding:0.5em;
+    margin:0.5em;
+    list-style-type: none;
+}
+/*li#none{
+ list-style-type: none;
+ text-align: left;
+}*/
+
+#right {
+    float: right;
+}
+span.right {
+    float: right;
+}
+span.left {
+    float: left;
+    margin: 0 0 0 0; 
+}
+
+/************** #textos variados **************/
+
+/* ------------------------------------ Textos (no todos se utilizan) --------------------------------------*/
+
+/* inicio de azul */	
+.textoAzul7L {font-size: 7pt; font-family:Verdana,Arial,Helvetica,Sans-serif,Courier-New,Times New Roman;
+              color: #000066;font-weight: 400; text-align: left; font-style:Normal;}
+.textoAzul7R {font-size: 7pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+              color: #000066;font-weight: 400; text-align: right; font-style:Normal;}	
+.textoAzul7C {font-size: 7pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+              color: #000066;font-weight: 400; text-align: center; font-style:Normal;}													
+
+.textoAzulClaro7L {font-size: 7pt; font-family:Verdana,Arial,Helvetica,Sans-serif,Courier-New,Times New Roman;
+                   color: #3A6DAB;font-weight: 400; text-align: left; font-style:Normal;}
+.textoAzulClaro7C {font-size: 7pt; font-family:Verdana,Arial,Helvetica,Sans-serif,Courier-New,Times New Roman;
+                   color: #3A6DAB;font-weight: 400; text-align: center; font-style:Normal;}
+																			
+.textoAzulClaro8L {font-size: 8pt; font-family:Verdana,Arial,Helvetica,Sans-serif,Courier-New,Times New Roman;
+                   color: #3A6DAB;font-weight: 400; text-align: left; font-style:Normal;}	
+.textoAzulClaro8C {font-size: 8pt; font-family:Verdana,Arial,Helvetica,Sans-serif,Courier-New,Times New Roman;
+                   color: #3A6DAB;font-weight: 400; text-align: center; font-style:Normal;}					
+
+.textoAzul8L {font-size: 8pt; font-family:Verdana,Arial,Helvetica,Sans-serif,Courier-New,Times New Roman;
+              color: #000066;font-weight: 400; text-align: left; font-style:Normal;}													
+.textoAzul8R {font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+              color: #000066;font-weight: 400; text-align: right; font-style:Normal;}
+.textoAzul8C {font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+              color: #000066;font-weight: 400; text-align: center; font-style:Normal;}														
+														
+.textoAzul8Left {margin: 0; padding: 0px 0px;
+                 font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                 color: #000066;font-weight: 400; text-align: left; font-style:Normal;}
+.textoAzul8Right {margin: 0; padding: 0px 0px;
+                  font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #000066;font-weight: 400; text-align: right; font-style:Normal;}	
+.textoAzul8Center {margin: 0; padding: 0px 0px;
+                   font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                   color: #000066;font-weight: 400; text-align: center; font-style:Normal;}																
+
+.textoAzul8Left1 {margin: 0; padding: 0px 0px;
+                  font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #3A6DAB;font-weight: 400; text-align: left; font-style:Normal;}	
+																		
+.textoAzul8Left2  {font: 8px Geneva, Verdana, Arial, Helvetica, sans-serif; 
+                   text-align: left; padding: 0px; color: #3A6DAB;}																				
+																			
+																			
+.textoAzul8LeftH3 {margin: 0; padding: 0px 0px;
+                   font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                   color: #000066;font-weight: 400; line-height: 3em; text-align: left; font-style:Normal;}			
+																			
+																			
+.textoAzul9C {font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+              color: #000066;font-weight: 400; text-align: center; font-style:Normal;}
+														
+.textoAzul9Left {margin: 0; padding: 0px 0px; line-height: 2em;
+                 font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                 color: #000066;font-weight: 400; text-align: left; font-style:Normal;}														
+														
+.textoAzul9Left2  {font: 9px Geneva, Verdana, Arial, Helvetica, sans-serif; 
+                   text-align: left; padding: 0px; color: #3A6DAB;}																				
+																
+
+.textoAzul9Right {float: right; margin: 0; padding: 0px 0px;
+                  font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #000066;font-weight: 400; text-align: right; font-style:Normal;}
+																		
+.textoAzul9Center {margin: 0; padding: 0px 0px;
+                   font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                   color: #000066;font-weight: 400; text-align: center; font-style:Normal;}	
+
+
+.textoAzul11Left2  {font: 11px Geneva, Verdana, Arial, Helvetica, sans-serif; 
+                    text-align: left; padding: 0px; color: #3A6DAB;}							
+																				
+.textoAzu112Left2  {font: 12px Geneva, Verdana, Arial, Helvetica, sans-serif; 
+                    text-align: left; padding: 0px; color: #3A6DAB;}				
+
+.textoAzul12C {font-size: 12pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+               color: #000066;font-weight: 400; text-align: center; font-style:Normal;}
+															
+.textoAzul18Center {margin: 0; padding: 0px 0px; /* en realidad es morado*/
+                    font-size: 18pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                    color: #632f79;font-weight: 400; text-align: center; font-style:Normal;}																					
+																	
+/* fin de azul */
+
+
+/* inicio de negro */	
+.textoNegro8Left {margin: 0; padding: 0px 0px;
+                  font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #404040;font-weight: 400; text-align: left; font-style:Normal;}
+
+.textoNegro9Left {margin: 0; padding: 0px 0px;
+                  font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #404040;font-weight: 400; text-align: left; font-style:Normal;}
+.textoNegro9Right {margin: 0; padding: 0px 0px;
+                   font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                   color: #404040;font-weight: 400; text-align: right; font-style:Normal;}		
+.textoNegro9Center {margin: 0; padding: 0px 0px;
+                   font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                   color: #404040;font-weight: 400; text-align: center; font-style:Normal;}			
+/* fin de negro */
+
+/* inicio de gris */						
+.textoGris7Left {margin: 0; padding: 0px 0px;
+                  font-size:7pt; font-family:Geneva,Verdana,Arial, Helvetica,Sans-serif,Courier-New,Times New Roman;
+                  color: #414141;font-weight: 400; text-align: left; font-style:Normal;}
+.textoGris7Right {margin: 0; padding: 0px 0px;
+                  font-size:7pt; font-family:Geneva,Verdana,Arial, Helvetica,Sans-serif,Courier-New,Times New Roman;
+                  color: #414141;font-weight: 400; text-align: right; font-style:Normal;}			
+.textoGris7Center {margin: 0; padding: 0px 0px;
+                  font-size:7pt; font-family:Geneva,Verdana,Arial, Helvetica,Sans-serif,Courier-New,Times New Roman;
+                  color: #414141;font-weight: 400; text-align: center; font-style:Normal;}					
+
+.textoGris8Left1 {margin: 0; padding: 0px 0px;
+                  font-size:8pt; font-family:Geneva,Verdana,Arial, Helvetica,Sans-serif,Courier-New,Times New Roman;
+                  color: #414141;font-weight: 400; text-align: left; font-style:Normal;}	
+																		
+.textoGris8Left2 {margin: 0; padding: 0px 0px;
+                  font-size:8pt; font-family:Geneva,Verdana,Arial,Helvetica,Sans-serif,Courier-New,Times New Roman;
+                  color: #5d5d5d;font-weight: 400; text-align: left; font-style:Normal;}									 
+
+.textoGris12Left {font: 12px Geneva, Verdana, Arial, Helvetica, sans-serif; height: 21px;/*width: 22%; */
+                  text-align: left; border: 1px solid #dfe0ff; padding: 1px; color: #2c2c2c;}								 
+/* fin de gris */
+
+/* inicio de rojo */	
+.textoRojo7Left {margin: 0; padding: 0px 0px;
+                 font-size: 7pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                 color: #cc0000;font-weight: 400; text-align: left; font-style:Normal;}
+.textoRojo7Right {margin: 0; padding: 0px 0px;
+                  font-size: 7pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #cc0000;font-weight: 400; text-align: right; font-style:Normal;}	
+.textoRojo7Center {margin: 0; padding: 0px 0px;
+                  font-size: 7pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #cc0000;font-weight: 400; text-align: center; font-style:Normal;}	
+																		
+.textoRojo8Left {margin: 0; padding: 0px 0px;
+                 font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                 color: #cc0000;font-weight: 400; text-align: left; font-style:Normal;}													
+.textoRojo8Right {margin: 0; padding: 0px 0px;
+                  font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #cc0000;font-weight: 400;  text-align: right; font-style:Normal;}	
+.textoRojo8Center {margin: 0; padding: 0px 0px;
+                  font-size: 8pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #cc0000;font-weight: 400;  text-align: center; font-style:Normal;}																			
+																		
+.textoRojo9Left {margin: 0; padding: 0px 0px;
+                 font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                 color: #cc0000;font-weight: 400; text-align: left; font-style:Normal;}													
+.textoRojo9Right {margin: 0; padding: 0px 0px;
+                  font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #cc0000;font-weight: 400;  text-align: right; font-style:Normal;}					
+.textoRojo9Center {margin: 0; padding: 0px 0px;
+                  font-size: 9pt; font-family:Verdana, Arial, Helvetica, Sans-serif, Courier-New, Times New Roman;
+                  color: #cc0000;font-weight: 400;  text-align: center; font-style:Normal;}		
+/* fin de rojo */																	
+
+
+/**************** Modificaciones estilos bootstrap ****************/
+
+.navbar {
+    background-color: #cccccc; /*añadido por agustin */
+    border-radius: 0;
+    margin: 0px !important ;
+	
+}
+
+.navbar-default .navbar-toggle {
+    border-color: #999;		
+}
+
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+    background-color: #eee;
+}
+
+.content0 .navbar-default {
+    border: none;
+}
+
+.content0 .navbar-header {
+    float: none !important; 
+}
+
+.content0 .navbar-brand {
+    color: #006;
+    width:100%;
+    text-align: center;
+}
+
+.content0 .navbar-brand:hover{
+    color: #006;
+}
+
+a:link, a:visited, a:hover {
+    color: #006699;
+    font-size:1.2rem;
+}
+
+
+
+@media (max-width: 768px) {
+    
+    #cabecera img {
+        max-height: 60px;
+    }
+       
+    .content0 .navbar-brand {
+        width: 75%;
+        text-align: left;
+    }
+    
+    .navbar-nav {
+        margin: 2px;
+    }
+    
+    #secciones {
+        padding-bottom: 0;
+    }
+
+    /************* Inicio modificaciones responsive Para Form *******/
+
+    label,
+    legend {
+        width: 100%;
+        float: none;
+        text-align: left;
+    }
+    fieldset {
+        width: 100%;
+        float: none;
+    }
+    input[type=text],
+    input[type=email],
+    input[type=url],
+    input[type=password],
+    textarea,
+    select {
+        width: 100%;
+        margin:0 !important;
+    }
+    input[type=radio] + label {
+        display: block;
+        width: auto;
+        padding-left: 2em;
+    }
+    input[type=submit],
+    input[type=button]{
+        display:block;
+        margin:2rem 0 0 0;
+        width:100%;
+        height: 4rem;
+    }
+    
+    html {
+        font-size: 12px;
+    } /* Aumentamos ligeramente el tamaño de texto 'root', afecta a los textos rem */
+}
