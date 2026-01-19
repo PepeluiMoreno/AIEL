@@ -5,8 +5,8 @@ import { useRouter } from 'vue-router'
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
   
-  const token = ref(localStorage.getItem('ong_token'))
-  const user = ref(JSON.parse(localStorage.getItem('ong_user') || 'null'))
+  const token = ref(localStorage.getItem('aiel_token'))
+  const user = ref(JSON.parse(localStorage.getItem('aiel_user') || 'null'))
   
   const isAuthenticated = computed(() => !!token.value)
   const userName = computed(() => user.value?.nombre || 'Usuario')
@@ -19,40 +19,36 @@ export const useAuthStore = defineStore('auth', () => {
   function setAuth(authData) {
     token.value = authData.token
     user.value = authData.user
-    localStorage.setItem('ong_token', authData.token)
-    localStorage.setItem('ong_user', JSON.stringify(authData.user))
+    localStorage.setItem('aiel_token', authData.token)
+    localStorage.setItem('aiel_user', JSON.stringify(authData.user))
   }
   
   function clearAuth() {
     token.value = null
     user.value = null
-    localStorage.removeItem('ong_token')
-    localStorage.removeItem('ong_user')
+    localStorage.removeItem('aiel_token')
+    localStorage.removeItem('aiel_user')
   }
   
   async function login(email, password) {
-    try {
-      // En producción, aquí harías la llamada a tu API
-      // Por ahora, simulamos un login exitoso
-      const mockUser = {
-        id: 1,
-        nombre: 'Admin',
-        apellido1: 'Usuario',
-        email: email,
-        roles: ['ADMIN']
-      }
-      
-      const authData = {
-        token: 'mock-jwt-token-' + Date.now(),
-        user: mockUser
-      }
-      
-      setAuth(authData)
-      return mockUser
-    } catch (error) {
-      console.error('Login error:', error)
-      throw error
+    // En desarrollo: aceptar cualquier email/password
+    const mockUser = {
+      id: 1,
+      nombre: 'Admin',
+      apellido1: 'Europa Laica',
+      apellido2: '',
+      email: email,
+      cargo: 'Administrador',
+      roles: ['Admin']
     }
+
+    const authData = {
+      token: 'aiel-jwt-token-' + Date.now(),
+      user: mockUser
+    }
+
+    setAuth(authData)
+    return mockUser
   }
   
   async function logout() {

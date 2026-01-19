@@ -14,7 +14,7 @@ ROLES = [
     {"codigo": "TESORERO", "nombre": "Tesorero", "descripcion": "Gestión financiera y de cuotas"},
     {"codigo": "COORDINADOR", "nombre": "Coordinador", "descripcion": "Coordinación de agrupaciones territoriales"},
     {"codigo": "GESTOR_SIMPS", "nombre": "Gestor de Simpatizantes", "descripcion": "Gestión de comunicaciones con simpatizantes"},
-    {"codigo": "ADMIN", "nombre": "Administrador", "descripcion": "Control total del sistema"},
+    {"codigo": "Admin", "nombre": "Administrador", "descripcion": "Control total del sistema"},
     {"codigo": "MANTENIMIENTO", "nombre": "Mantenimiento", "descripcion": "Acceso técnico para mantenimiento del sistema"},
 ]
 

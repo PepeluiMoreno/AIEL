@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git init)"
+      "Bash(git init)",
+      "Bash(cmd /c \"cd /d c:\\\\Users\\\\Jose\\\\dev\\\\AIEL\\\\frontend\\\\src\\\\graphql\\\\queries && ren \"\"campanias,js\"\" \"\"campanias.js\"\"\")"
     ]
   }
 }

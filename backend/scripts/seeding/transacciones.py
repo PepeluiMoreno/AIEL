@@ -107,7 +107,7 @@ PERMISOS = {
     "GESTOR_SIMPS": [
         "ENVIAR_EMAIL_SIMPATIZANTES",
     ],
-    "ADMIN": [
+    "Admin": [
         # Admin tiene acceso a todo
         *[t["codigo"] for t in TRANSACCIONES],
     ],

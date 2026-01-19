@@ -20,6 +20,8 @@ from .financiero import FinancieroQuery
 from .campania import CampaniaQuery
 from .grupo_trabajo import GrupoTrabajoQuery
 from .voluntariado import VoluntariadoQuery
+from .presupuesto import PresupuestoQuery
+from .actividad import ActividadQuery
 
 
 def model_to_pais(m: PaisModel) -> Pais:
@@ -55,7 +57,7 @@ def model_to_agrupacion(m: AgrupacionModel) -> AgrupacionTerritorial:
 
 
 @strawberry.type
-class Query(FinancieroQuery, CampaniaQuery, GrupoTrabajoQuery, VoluntariadoQuery):
+class Query(FinancieroQuery, CampaniaQuery, GrupoTrabajoQuery, VoluntariadoQuery, PresupuestoQuery, ActividadQuery):
     @strawberry.field
     def health(self) -> str:
         return "ok"

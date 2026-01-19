@@ -15,11 +15,11 @@ from app.models import *  # noqa: F401,F403
 
 config = context.config
 
-# Construir URL desde variables de entorno (usa puerto directo para migraciones)
+# Construir URL desde variables de entorno (usa Session Pooler para migraciones - IPv4 compatible)
 db_user = os.getenv("DB_USER", "postgres")
 db_password = os.getenv("DB_PASSWORD", "")
-db_host = os.getenv("DB_HOST", "localhost")
-db_port = os.getenv("DB_DIRECT_PORT", "5432")  # Puerto directo para Alembic
+db_host = os.getenv("DB_SESSION_HOST", os.getenv("DB_HOST", "localhost"))
+db_port = os.getenv("DB_SESSION_PORT", "5432")
 db_name = os.getenv("DB_NAME", "postgres")
 
 database_url = f"postgresql+asyncpg://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
@@ -54,6 +54,10 @@ async def run_async_migrations():
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        connect_args={
+            "statement_cache_size": 0,  # Necesario para Supabase Transaction/Session Pooler
+            "prepared_statement_cache_size": 0,
+        }
     )
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

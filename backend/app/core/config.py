@@ -4,13 +4,12 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    # Supabase - todas las variables vienen del .env
+    # Supabase Pooler (Transaction mode)
     db_host: str
     db_port: int
     db_name: str
     db_user: str
     db_password: str
-    db_direct_port: int
 
     # JWT
     jwt_secret: str
@@ -20,17 +19,12 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def database_url(self) -> str:
-        """URL con pooler (pgbouncer) para la app."""
+        """URL con pooler para la app."""
         return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
-
-    @computed_field
-    @property
-    def database_url_sync(self) -> str:
-        """URL síncrona para Alembic."""
-        return f"postgresql://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_direct_port}/{self.db_name}"
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 
 @lru_cache

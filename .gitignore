@@ -10,5 +10,8 @@ backend/app/resolvers/__pycache__/
 backend/app/schemas/__pycache__/    
 backend/app/tests/__pycache__/
 backend/app/tests/data/
-backend/app/tests/results/  
-    
+backend/app/tests/results/ 
+frontend/node_modules/
+.claude/
+frontend/dist/
+frontend/.env   

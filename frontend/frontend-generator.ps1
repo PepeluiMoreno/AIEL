@@ -336,7 +336,7 @@ export const useAuthStore = defineStore('auth', () => {
       nombre: 'Admin',
       apellido1: 'User',
       email: email,
-      roles: ['ADMIN']
+      roles: ['Admin']
     }
     
     setAuth({

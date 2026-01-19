@@ -8,7 +8,15 @@
       "Bash(pip install:*)",
       "Bash(venv/Scripts/python:*)",
       "Bash(nslookup:*)",
-      "Bash(dir /b c:UsersJosedevAIELbackendalembic)"
+      "Bash(dir /b c:UsersJosedevAIELbackendalembic)",
+      "Bash(tree:*)",
+      "Bash(ren:*)",
+      "Bash(cmd /c \"cd /d c:\\\\Users\\\\Jose\\\\dev\\\\AIEL\\\\frontend\\\\src\\\\graphql\\\\queries && ren \"\"miembros,js\"\" \"\"miembros.js\"\"\")",
+      "Bash(powershell -Command \"Rename-Item -Path ''c:\\\\Users\\\\Jose\\\\dev\\\\AIEL\\\\frontend\\\\src\\\\graphql\\\\queries\\\\miembros,js'' -NewName ''miembros.js''\")",
+      "Bash(powershell:*)",
+      "Bash(.venvScriptspython.exe -m alembic upgrade head)",
+      "Bash(./venv/Scripts/python.exe -m alembic:*)",
+      "Bash(./venv/Scripts/python.exe:*)"
     ]
   }
 }

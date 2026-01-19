@@ -14,6 +14,8 @@ from .financiero import FinancieroMutation
 from .campania import CampaniaMutation
 from .grupo_trabajo import GrupoTrabajoMutation
 from .voluntariado import VoluntariadoMutation
+from .presupuesto import PresupuestoMutation
+from .actividad import ActividadMutation
 
 
 def model_to_usuario(u: UsuarioModel) -> Usuario:
@@ -43,7 +45,7 @@ def model_to_usuario(u: UsuarioModel) -> Usuario:
 
 
 @strawberry.type
-class Mutation(FinancieroMutation, CampaniaMutation, GrupoTrabajoMutation, VoluntariadoMutation):
+class Mutation(FinancieroMutation, CampaniaMutation, GrupoTrabajoMutation, VoluntariadoMutation, PresupuestoMutation, ActividadMutation):
     @strawberry.mutation
     async def login(self, info: Info[Context, None], input: LoginInput) -> AuthPayload:
         async with await info.context.get_db() as db:

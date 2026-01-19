@@ -1,7 +1,8 @@
+import uuid
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import String, ForeignKey, DateTime, Date, Numeric, Boolean, Text, Integer
+from sqlalchemy import String, ForeignKey, DateTime, Date, Numeric, Boolean, Text, Integer, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..core.database import Base
@@ -11,7 +12,7 @@ class TipoCampania(Base):
     """Tipos de campaña: RECAUDACION, SENSIBILIZACION, AYUDA_DIRECTA, etc."""
     __tablename__ = "tipo_campania"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     codigo: Mapped[str] = mapped_column(String(20), unique=True)
     nombre: Mapped[str] = mapped_column(String(100))
     descripcion: Mapped[str | None] = mapped_column(String(500))
@@ -22,7 +23,7 @@ class EstadoCampania(Base):
     """Estados: PLANIFICADA, ACTIVA, SUSPENDIDA, FINALIZADA, CANCELADA."""
     __tablename__ = "estado_campania"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     codigo: Mapped[str] = mapped_column(String(20), unique=True)
     nombre: Mapped[str] = mapped_column(String(100))
     orden: Mapped[int] = mapped_column(Integer, default=0)
@@ -34,15 +35,15 @@ class Campania(Base):
     """Campaña de la ONG."""
     __tablename__ = "campania"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     codigo: Mapped[str] = mapped_column(String(20), unique=True)
     nombre: Mapped[str] = mapped_column(String(200))
     descripcion_corta: Mapped[str | None] = mapped_column(String(300))
     descripcion_larga: Mapped[str | None] = mapped_column(Text)
 
     # Clasificación
-    tipo_campania_id: Mapped[int] = mapped_column(ForeignKey("tipo_campania.id"))
-    estado_campania_id: Mapped[int] = mapped_column(ForeignKey("estado_campania.id"))
+    tipo_campania_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("tipo_campania.id"))
+    estado_campania_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("estado_campania.id"))
 
     # Fechas planificadas
     fecha_inicio_plan: Mapped[date | None] = mapped_column(Date)
@@ -58,12 +59,12 @@ class Campania(Base):
     meta_participantes: Mapped[int | None] = mapped_column(Integer)
 
     # Responsable y agrupación
-    responsable_id: Mapped[int | None] = mapped_column(ForeignKey("miembro.id"))
-    agrupacion_id: Mapped[int | None] = mapped_column(ForeignKey("agrupacion_territorial.id"))
+    responsable_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("miembro.id"))
+    agrupacion_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("agrupacion_territorial.id"))
 
     # Auditoría
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    created_by_id: Mapped[int] = mapped_column(ForeignKey("usuario.id"))
+    created_by_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("usuario.id"))
     updated_at: Mapped[datetime | None] = mapped_column(DateTime, onupdate=datetime.utcnow)
 
     # Relaciones
@@ -74,14 +75,17 @@ class Campania(Base):
     creador: Mapped["Usuario"] = relationship(foreign_keys=[created_by_id])
     acciones: Mapped[list["AccionCampania"]] = relationship(back_populates="campania")
     participantes: Mapped[list["ParticipanteCampania"]] = relationship(back_populates="campania")
+    # Actividades vinculadas a esta campaña
+    actividades: Mapped[list["Actividad"]] = relationship(back_populates="campania")
+    propuestas: Mapped[list["PropuestaActividad"]] = relationship(back_populates="campania")
 
 
 class AccionCampania(Base):
     """Acción/actividad dentro de una campaña."""
     __tablename__ = "accion_campania"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    campania_id: Mapped[int] = mapped_column(ForeignKey("campania.id"))
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    campania_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("campania.id"))
 
     nombre: Mapped[str] = mapped_column(String(200))
     descripcion: Mapped[str | None] = mapped_column(Text)
@@ -112,7 +116,7 @@ class RolParticipante(Base):
     """Roles de participación: VOLUNTARIO, COORDINADOR, DONANTE, etc."""
     __tablename__ = "rol_participante"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     codigo: Mapped[str] = mapped_column(String(20), unique=True)
     nombre: Mapped[str] = mapped_column(String(100))
     es_voluntario: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -126,14 +130,14 @@ class ParticipanteCampania(Base):
     __tablename__ = "participante_campania"
 
     # Clave primaria compuesta
-    campania_id: Mapped[int] = mapped_column(ForeignKey("campania.id"), primary_key=True)
-    miembro_id: Mapped[int] = mapped_column(ForeignKey("miembro.id"), primary_key=True)
+    campania_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("campania.id"), primary_key=True)
+    miembro_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("miembro.id"), primary_key=True)
 
-    rol_participante_id: Mapped[int] = mapped_column(ForeignKey("rol_participante.id"))
+    rol_participante_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("rol_participante.id"))
 
     # Datos de participación
     horas_aportadas: Mapped[Decimal | None] = mapped_column(Numeric(6, 2))
-    donacion_asociada_id: Mapped[int | None] = mapped_column(ForeignKey("donacion.id"))
+    donacion_asociada_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("donacion.id"))
 
     # Estado
     confirmado: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -158,3 +162,4 @@ from .miembro import Miembro  # noqa: E402,F401
 from .agrupacion import AgrupacionTerritorial  # noqa: E402,F401
 from .usuario import Usuario  # noqa: E402,F401
 from .financiero import Donacion  # noqa: E402,F401
+from .actividad import Actividad, PropuestaActividad  # noqa: E402,F401

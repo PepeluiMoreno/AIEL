@@ -64,6 +64,9 @@ class GrupoTrabajo(Base):
     miembros: Mapped[list["MiembroGrupo"]] = relationship(back_populates="grupo")
     tareas: Mapped[list["TareaGrupo"]] = relationship(back_populates="grupo")
     reuniones: Mapped[list["ReunionGrupo"]] = relationship(back_populates="grupo")
+    # Tareas de actividades asignadas a este grupo
+    tareas_actividades: Mapped[list["TareaActividad"]] = relationship(back_populates="grupo_trabajo")
+    tareas_propuestas: Mapped[list["TareaPropuesta"]] = relationship(back_populates="grupo_trabajo")
 
 
 class RolGrupo(Base):
@@ -217,3 +220,4 @@ from .campania import Campania  # noqa: E402,F401
 from .agrupacion import AgrupacionTerritorial  # noqa: E402,F401
 from .usuario import Usuario  # noqa: E402,F401
 from .miembro import Miembro  # noqa: E402,F401
+from .actividad import TareaActividad, TareaPropuesta  # noqa: E402,F401

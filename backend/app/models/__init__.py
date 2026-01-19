@@ -19,3 +19,12 @@ from .voluntariado import (
     CategoriaCompetencia, Competencia, NivelCompetencia, MiembroCompetencia,
     TipoDocumento, DocumentoMiembro, TipoFormacion, FormacionMiembro
 )
+from .presupuesto import (
+    EstadoPlanificacion, CategoriaPartida, PartidaPresupuestaria, PlanificacionAnual
+)
+from .actividad import (
+    TipoActividad, EstadoActividad, EstadoPropuesta, TipoRecurso, TipoKPI,
+    PropuestaActividad, TareaPropuesta, RecursoPropuesta, GrupoPropuesta,
+    Actividad, TareaActividad, RecursoActividad, GrupoActividad, ParticipanteActividad,
+    KPI, KPIActividad, MedicionKPI
+)
