@@ -1,0 +1,251 @@
+<template>
+  <div class="min-h-screen bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-20">
+      <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <img src="@/assets/logo.png" alt="Europa Laica" class="h-10 w-auto" />
+            </div>
+            
+          </div>
+
+          <!-- Header right -->
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-500 hidden md:block">v1.0</span>
+
+            <!-- Notifications -->
+            <button class="p-2 text-gray-500 hover:text-gray-700 relative">
+              <span class="text-xl">🔔</span>
+              <span class="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-purple-900 min-h-[calc(100vh-64px)] flex flex-col sticky top-16">
+        <!-- Navigation -->
+        <nav class="flex-1 p-4 overflow-y-auto">
+          <div class="mb-6">
+            <h2 class="text-xs font-semibold text-purple-400 uppercase tracking-wider mb-3">
+              Navegación Principal
+            </h2>
+            <ul class="space-y-1">
+              <li>
+                <router-link
+                  to="/"
+                  class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                  :class="$route.path === '/' ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'"
+                >
+                  <span class="mr-3">🏠</span>
+                  <span>Dashboard</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                  to="/miembros"
+                  class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                  :class="$route.path === '/miembros' ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'"
+                >
+                  <span class="mr-3">👥</span>
+                  <span>Miembros</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                  to="/campanias"
+                  class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                  :class="$route.path === '/campanias' ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'"
+                >
+                  <span class="mr-3">🚩</span>
+                  <span>Campañas</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                  to="/grupos"
+                  class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                  :class="$route.path === '/grupos' ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'"
+                >
+                  <span class="mr-3">👥</span>
+                  <span>Grupos de Trabajo</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                  to="/financiero"
+                  class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                  :class="$route.path === '/financiero' ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'"
+                >
+                  <span class="mr-3">💰</span>
+                  <span>Gestión Financiera</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                  to="/voluntarios"
+                  class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                  :class="$route.path === '/voluntarios' ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'"
+                >
+                  <span class="mr-3">❤️</span>
+                  <span>Voluntarios</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Administración -->
+          <div class="mb-6">
+            <h2 class="text-xs font-semibold text-purple-400 uppercase tracking-wider mb-3">
+              Administración
+            </h2>
+            <ul class="space-y-1">
+              <li>
+                <router-link
+                  to="/usuarios"
+                  class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                  :class="$route.path === '/usuarios' ? 'bg-purple-800 text-white' : 'text-purple-200 hover:bg-purple-800 hover:text-white'"
+                >
+                  <span class="mr-3">⚙️</span>
+                  <span>Usuarios</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Ayuda -->
+          <div>
+            <h2 class="text-xs font-semibold text-purple-400 uppercase tracking-wider mb-3">
+              Ayuda
+            </h2>
+            <ul class="space-y-1">
+              <li>
+                <a href="https://laicismo.org" target="_blank" class="flex items-center px-3 py-2 text-sm font-medium text-purple-200 rounded-md hover:bg-purple-800 hover:text-white transition-colors">
+                  <span class="mr-3">🌐</span>
+                  <span>Web Europa Laica</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-purple-200 rounded-md hover:bg-purple-800 hover:text-white transition-colors">
+                  <span class="mr-3">📖</span>
+                  <span>Documentación</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- User Panel (abajo) -->
+        <div class="border-t border-purple-800">
+          <div class="p-4 bg-purple-800">
+            <div class="flex items-center">
+              <div class="h-10 w-10 rounded-full bg-purple-600 flex items-center justify-center text-white text-sm font-medium">
+                {{ userInitials }}
+              </div>
+              <div class="ml-3 flex-1">
+                <p class="text-white font-medium text-sm">{{ userName }}</p>
+                <p class="text-purple-300 text-xs">{{ userRole }}</p>
+              </div>
+            </div>
+            <div class="mt-2 flex items-center text-purple-300 text-xs">
+              <span class="mr-1">🕒</span>
+              <span>Sesión: {{ sessionTime }}</span>
+            </div>
+          </div>
+          <div class="p-3">
+            <button
+              @click="logout"
+              class="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-purple-700 rounded-md hover:bg-purple-600 transition-colors"
+            >
+              <span class="mr-2">🚪</span>
+              <span>Cerrar sesión</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="flex-1 p-6">
+        <div class="max-w-7xl mx-auto">
+          <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
+            <p v-if="subtitle" class="text-gray-600 mt-1">{{ subtitle }}</p>
+          </div>
+          <slot />
+        </div>
+      </main>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.js'
+
+defineProps({
+  title: {
+    type: String,
+    required: true
+  },
+  subtitle: {
+    type: String,
+    default: ''
+  }
+})
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const userName = computed(() => authStore.userName || 'Usuario')
+const userInitials = computed(() => authStore.userInitials || 'US')
+const userRole = computed(() => authStore.user?.roles?.[0] || 'Usuario')
+
+// Session time tracking
+const sessionStartTime = ref(Date.now())
+const sessionTime = ref('0m')
+let sessionTimer = null
+
+const updateSessionTime = () => {
+  const elapsed = Date.now() - sessionStartTime.value
+  const minutes = Math.floor(elapsed / 60000)
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+
+  if (hours > 0) {
+    sessionTime.value = `${hours}h ${mins}m`
+  } else {
+    sessionTime.value = `${mins}m`
+  }
+}
+
+onMounted(() => {
+  // Check if there's a stored session start time
+  const storedTime = localStorage.getItem('session_start_time')
+  if (storedTime) {
+    sessionStartTime.value = parseInt(storedTime)
+  } else {
+    localStorage.setItem('session_start_time', sessionStartTime.value.toString())
+  }
+
+  updateSessionTime()
+  sessionTimer = setInterval(updateSessionTime, 60000) // Update every minute
+})
+
+onUnmounted(() => {
+  if (sessionTimer) {
+    clearInterval(sessionTimer)
+  }
+})
+
+const logout = async () => {
+  localStorage.removeItem('session_start_time')
+  await authStore.logout()
+  router.push('/login')
+}
+</script>
