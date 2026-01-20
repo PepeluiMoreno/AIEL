@@ -1,5 +1,5 @@
 """
-Script para importar importes de cuota desde el dump MySQL.
+Script para importar importes de cuota desde MySQL.
 
 Importa la tabla:
 - IMPORTEDESCUOTAANIO → importes_cuota_anio
@@ -11,11 +11,11 @@ ya que el nuevo modelo soporta cuotas diferentes por tipo de miembro.
 En el dump MySQL solo hay un importe por ejercicio, así que se replica
 para todos los tipos de miembro que requieren cuota.
 
-Este script debe ejecutarse DESPUÉS de crear catálogos base.
+Este script debe ejecutarse DESPUÉS de crear catálogos base y antes de importar cuotas anuales.
 """
 import asyncio
 import uuid
-import pymysql
+from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -25,16 +25,7 @@ from sqlalchemy import select
 from app.core.database import get_database_url
 from app.domains.financiero.models.cuotas import ImporteCuotaAnio
 from app.domains.miembros.models.miembro import TipoMiembro
-
-
-# Configuración de conexión MySQL (ajustar según necesidad)
-MYSQL_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',  # Ajustar
-    'database': 'europalaica_com',
-    'charset': 'utf8mb4'
-}
+from app.scripts.importacion.mysql_helper import get_mysql_connection
 
 
 class MapeadorImportesCuota:
@@ -55,66 +46,86 @@ class MapeadorImportesCuota:
         for tipo in self.tipos_miembro_con_cuota:
             print(f"  - {tipo.codigo}: {tipo.nombre}")
 
-    async def importar_importes_cuota(self, session: AsyncSession, mysql_conn):
+    async def importar_importes_cuota(self, session: AsyncSession):
         """
         Importa la tabla IMPORTEDESCUOTAANIO y genera registros para cada tipo de miembro.
         """
 
-        print("\nImportando importes de cuota por año...")
+        print("\nImportando importes de cuota por ano desde MySQL...")
 
-        cursor = mysql_conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("""
-            SELECT
-                ANIO,
-                IMPORTE,
-                ACTIVO
-            FROM IMPORTEDESCUOTAANIO
-            ORDER BY ANIO
-        """)
+        # Estructura de IMPORTEDESCUOTAANIO:
+        # ANIOCUOTA, CODCUOTA, IMPORTECUOTAANIOEL, NOMBRECUOTA, DESCRIPCIONCUOTA
 
         importados = 0
 
-        for row in cursor:
-            ejercicio = row['ANIO']
-            importe = Decimal(str(row['IMPORTE'])) if row['IMPORTE'] else Decimal('0.00')
-            activo = bool(row['ACTIVO']) if row['ACTIVO'] is not None else True
+        async with get_mysql_connection() as mysql_conn:
+            async with mysql_conn.cursor() as cursor:
+                await cursor.execute("""
+                    SELECT ANIOCUOTA, CODCUOTA, IMPORTECUOTAANIOEL, NOMBRECUOTA, DESCRIPCIONCUOTA
+                    FROM IMPORTEDESCUOTAANIO
+                    ORDER BY ANIOCUOTA
+                """)
+                rows = await cursor.fetchall()
 
-            # Para cada tipo de miembro con cuota, crear un registro
-            for tipo_miembro in self.tipos_miembro_con_cuota:
-                # Verificar si ya existe
-                result = await session.execute(
-                    select(ImporteCuotaAnio).where(
-                        ImporteCuotaAnio.ejercicio == ejercicio,
-                        ImporteCuotaAnio.tipo_miembro_id == tipo_miembro.id
-                    )
-                )
-                existe = result.scalar_one_or_none()
+                for row in rows:
+                    ejercicio = row[0]  # ANIOCUOTA
+                    codcuota = row[1]  # CODCUOTA
+                    importe_val = row[2]  # IMPORTECUOTAANIOEL
+                    nombre_cuota = row[3]  # NOMBRECUOTA
+                    descripcion = row[4]  # DESCRIPCIONCUOTA
 
-                if existe:
-                    print(f"  ⚠ Importe para ejercicio {ejercicio} y tipo {tipo_miembro.codigo} ya existe, se omite")
-                    continue
+                    # Convertir a tipos correctos
+                    try:
+                        ejercicio_int = int(ejercicio) if ejercicio else None
+                        if not ejercicio_int:
+                            continue
 
-                # Crear registro de importe
-                importe_cuota = ImporteCuotaAnio(
-                    ejercicio=ejercicio,
-                    tipo_miembro_id=tipo_miembro.id,
-                    importe=importe,
-                    nombre_cuota=f"Cuota {tipo_miembro.nombre} {ejercicio}",
-                    activo=activo,
-                    observaciones=f"Importado desde IMPORTEDESCUOTAANIO (importe general: {importe}€)"
-                )
+                        importe = Decimal(str(importe_val)) if importe_val else Decimal('0.00')
 
-                session.add(importe_cuota)
-                importados += 1
+                    except Exception as e:
+                        print(f"  [WARN] Error procesando fila: {row} - {e}")
+                        continue
 
-                if importados % 20 == 0:
-                    print(f"  Procesados {importados} registros...")
+                    # Para cada tipo de miembro con cuota, crear un registro
+                    for tipo_miembro in self.tipos_miembro_con_cuota:
+                        # Verificar si ya existe
+                        result = await session.execute(
+                            select(ImporteCuotaAnio).where(
+                                ImporteCuotaAnio.ejercicio == ejercicio_int,
+                                ImporteCuotaAnio.tipo_miembro_id == tipo_miembro.id
+                            )
+                        )
+                        existe = result.scalar_one_or_none()
 
-        cursor.close()
+                        if existe:
+                            continue
+
+                        # Crear registro de importe
+                        nombre_final = f"{nombre_cuota} - {tipo_miembro.nombre}" if nombre_cuota else f"Cuota {tipo_miembro.nombre} {ejercicio_int}"
+                        obs = f"Importado desde IMPORTEDESCUOTAANIO (código: {codcuota}, importe: {importe}€)"
+                        if descripcion:
+                            obs += f" | {descripcion}"
+
+                        importe_cuota = ImporteCuotaAnio(
+                            ejercicio=ejercicio_int,
+                            tipo_miembro_id=tipo_miembro.id,
+                            importe=importe,
+                            nombre_cuota=nombre_final,
+                            activo=True,  # Todos los importes cargados se consideran activos
+                            observaciones=obs,
+                            fecha_creacion=datetime.utcnow(),  # Explicit timestamp for import
+                            eliminado=False  # Explicit soft delete flag
+                        )
+
+                        session.add(importe_cuota)
+                        importados += 1
+
+                        if importados % 20 == 0:
+                            print(f"  Procesados {importados} registros...")
 
         await session.flush()
 
-        print(f"  ✓ {importados} importes de cuota importados")
+        print(f"  [OK] {importados} importes de cuota importados")
 
     async def ajustar_importes_especiales(self, session: AsyncSession):
         """
@@ -149,32 +160,26 @@ class MapeadorImportesCuota:
         #         importe_cuota.nombre_cuota = f"Cuota Simpatizante {importe_cuota.ejercicio} (reducida)"
         #         importe_cuota.observaciones += " | Cuota reducida al 50%"
 
-        #     print(f"  ✓ {len(importes_simpatizante)} importes de simpatizantes ajustados")
+        #     print(f"  [OK] {len(importes_simpatizante)} importes de simpatizantes ajustados")
 
-        print("  ℹ No se aplicaron ajustes especiales")
+        print("  [INFO] No se aplicaron ajustes especiales")
 
 
 async def main():
     """Función principal."""
 
     print("\n" + "="*80)
-    print("IMPORTACIÓN DE IMPORTES DE CUOTA")
+    print("IMPORTACION DE IMPORTES DE CUOTA")
     print("="*80 + "\n")
 
-    # Conectar a MySQL
-    print("Conectando a MySQL...")
-    try:
-        mysql_conn = pymysql.connect(**MYSQL_CONFIG)
-        print("  ✓ Conexión MySQL establecida")
-    except Exception as e:
-        print(f"  ✗ Error conectando a MySQL: {e}")
-        print("\n  Ajusta MYSQL_CONFIG en el script con las credenciales correctas.")
-        return
-
     # Conectar a PostgreSQL
-    print("\nConectando a PostgreSQL...")
+    print("Conectando a PostgreSQL...")
     database_url = get_database_url()
-    engine = create_async_engine(database_url, echo=False)
+    engine = create_async_engine(
+        database_url,
+        echo=False,
+        connect_args={"server_settings": {"jit": "off"}, "statement_cache_size": 0}
+    )
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session() as session:
@@ -185,7 +190,7 @@ async def main():
             await mapeador.cargar_tipos_miembro_con_cuota(session)
 
             # Importar importes de cuota
-            await mapeador.importar_importes_cuota(session, mysql_conn)
+            await mapeador.importar_importes_cuota(session)
 
             # Ajustar importes especiales (opcional)
             await mapeador.ajustar_importes_especiales(session)
@@ -194,17 +199,16 @@ async def main():
             await session.commit()
 
             print("\n" + "="*80)
-            print("✓ IMPORTACIÓN COMPLETADA")
+            print("[OK] IMPORTACION COMPLETADA")
             print("="*80)
 
         except Exception as e:
             await session.rollback()
-            print(f"\n✗ ERROR: {e}")
+            print(f"\n[ERROR] {e}")
             import traceback
             traceback.print_exc()
             raise
         finally:
-            mysql_conn.close()
             await engine.dispose()
 
 

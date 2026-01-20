@@ -5,6 +5,8 @@ from .campania import (
     Campania,
     RolParticipante,
     ParticipanteCampania,
+    Firmante,
+    FirmaCampania,
 )
 
 __all__ = [
@@ -12,4 +14,6 @@ __all__ = [
     "Campania",
     "RolParticipante",
     "ParticipanteCampania",
+    "Firmante",
+    "FirmaCampania",
 ]

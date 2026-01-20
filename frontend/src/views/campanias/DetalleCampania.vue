@@ -32,32 +32,40 @@
         <div class="flex justify-between items-start">
           <div>
             <div class="flex items-center space-x-3">
-              <h2 class="text-2xl font-bold text-gray-900">{{ campania.nombre }}</h2>
+              <h2 class="text-2xl font-bold text-gray-900">{{ campania.lema || campania.nombre }}</h2>
               <span :class="claseEstado" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
-                {{ obtenerNombreEstado(campania.estado) }}
+                {{ campania.estado?.nombre || 'Sin estado' }}
               </span>
             </div>
             <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600">
-              <span>Código: <strong>{{ campania.codigo }}</strong></span>
-              <span>📅 {{ formatearFecha(campania.fecha_inicio_plan) }} - {{ formatearFecha(campania.fecha_fin_plan) }}</span>
+              <span v-if="campania.lema" class="text-gray-700">{{ campania.nombre }}</span>
+              <span v-if="campania.tipoCampania" class="text-purple-600 bg-purple-100 px-2 py-0.5 rounded">
+                {{ campania.tipoCampania.nombre }}
+              </span>
+              <span v-if="campania.fechaInicioPlan || campania.fechaFinPlan">
+                📅 {{ formatearFecha(campania.fechaInicioPlan) }} - {{ formatearFecha(campania.fechaFinPlan) }}
+              </span>
             </div>
-            <p v-if="campania.descripcion_corta" class="mt-2 text-gray-700">
-              {{ campania.descripcion_corta }}
+            <p v-if="campania.descripcionCorta" class="mt-2 text-gray-700">
+              {{ campania.descripcionCorta }}
             </p>
+            <a
+              v-if="campania.urlExterna"
+              :href="campania.urlExterna"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-2 inline-flex items-center text-sm text-purple-600 hover:text-purple-800"
+            >
+              🔗 Ver en laicismo.org
+            </a>
           </div>
-          
+
           <div class="flex space-x-3">
             <router-link
               to="/campanias"
               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Volver
-            </router-link>
-            <router-link
-              :to="`/campanias/${campania.id}/editar`"
-              class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700"
-            >
-              Editar
             </router-link>
           </div>
         </div>
@@ -122,7 +130,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import AppLayout from '@/layouts/AppLayout.vue'
+import AppLayout from '@/components/common/AppLayout.vue'
+import { executeQuery } from '@/graphql/client'
+import { GET_CAMPANIA } from '@/graphql/queries/campanias'
 
 // Importar componentes de pestañas
 import InformacionGeneralTab from '@/components/campanias/tabs/InformacionGeneralTab.vue'
@@ -143,8 +153,8 @@ const actividades = ref([])
 const recursosHumanos = ref([])
 const recursosMateriales = ref([])
 
-const titulo = computed(() => campania.value?.nombre || 'Detalle de Campaña')
-const subtitulo = computed(() => campania.value?.codigo || '')
+const titulo = computed(() => campania.value?.lema || campania.value?.nombre || 'Detalle de Campaña')
+const subtitulo = computed(() => campania.value?.tipoCampania?.nombre || '')
 
 const pestañas = computed(() => [
   { 
@@ -183,191 +193,17 @@ onMounted(() => {
 const cargarCampania = async () => {
   cargando.value = true
   error.value = null
-  
+
   try {
-    // Simular carga de API
-    await new Promise(resolve => setTimeout(resolve, 800))
-    
     const campaniaId = route.params.id
-    
-    // Datos de ejemplo según el ID
-    const campaniasEjemplo = {
-      '1': {
-        id: 1,
-        codigo: 'CAMP-2025-001',
-        nombre: 'Campaña Día del Laicismo 2025',
-        descripcion_corta: 'Actividades y eventos para celebrar el Día Internacional del Laicismo',
-        descripcion_larga: 'Esta es una campaña completa para celebrar el Día Internacional del Laicismo. Incluye charlas, conferencias, actos públicos y actividades de concienciación sobre los valores laicos en la sociedad contemporánea.\n\nObjetivos:\n- Promover la separación Iglesia-Estado\n- Educar sobre los principios laicos\n- Movilizar a la sociedad civil',
-        estado: 'ACTIVA',
-        tipo_campania_id: 1,
-        fecha_inicio_plan: '2025-01-15',
-        fecha_fin_plan: '2025-02-15',
-        fecha_inicio_real: '2025-01-15',
-        meta_recaudacion: 5000,
-        recaudacion_actual: 2350,
-        recaudacion_real: 2350,
-        meta_participantes: 50,
-        participantes_reales: 24,
-        objetivo_principal: 'Promover los valores laicos y la separación Iglesia-Estado en la sociedad',
-        responsable: 'María García López',
-        agrupacion_nombre: 'Europa Laica Nacional',
-        agrupacion_codigo: 'EL-NAC',
-        presupuesto_total: 3000,
-        presupuesto_ejecutado: 1500,
-        alcance: 120,
-        resultados_cualitativos: 'Excelente respuesta del público. Alta participación en las charlas y buena cobertura mediática.',
-        lecciones_aprendidas: 'Necesitamos más voluntarios para tareas logísticas. La comunicación anticipada es clave.',
-        nivel_exito: 8,
-        recomendaciones: 'Planificar con más antelación y diversificar las actividades'
-      },
-      '2': {
-        id: 2,
-        codigo: 'CAMP-2025-002',
-        nombre: 'Jornadas sobre Educación Laica',
-        descripcion_corta: 'Ciclo de conferencias sobre la importancia de la educación laica',
-        descripcion_larga: 'Ciclo completo de conferencias sobre educación laica con expertos nacionales e internacionales.',
-        estado: 'PLANIFICADA',
-        tipo_campania_id: 2,
-        fecha_inicio_plan: '2025-03-01',
-        fecha_fin_plan: '2025-03-30',
-        meta_recaudacion: 3000,
-        meta_participantes: 100,
-        responsable: 'Juan Martínez',
-        agrupacion_nombre: 'Madrid'
-      }
-    }
-    
-    campania.value = campaniasEjemplo[campaniaId] || null
-    
-    if (!campania.value) {
+    const data = await executeQuery(GET_CAMPANIA, { id: campaniaId })
+
+    if (data.campanias && data.campanias.length > 0) {
+      campania.value = data.campanias[0]
+      actividades.value = campania.value.actividades || []
+    } else {
       throw new Error('Campaña no encontrada')
     }
-    
-    // Cargar objetivos de ejemplo
-    objetivos.value = [
-      {
-        id: 1,
-        titulo: 'Recaudar 5000€ para financiación',
-        descripcion: 'Alcanzar la meta de recaudación para cubrir los gastos de las actividades',
-        tipo: 'cuantitativo',
-        prioridad: 'alta',
-        meta: '5000€',
-        progreso: 47,
-        fecha_limite: '2025-02-15'
-      },
-      {
-        id: 2,
-        titulo: 'Alcanzar 50 participantes activos',
-        descripcion: 'Involucrar al menos 50 personas en las actividades de la campaña',
-        tipo: 'cuantitativo',
-        prioridad: 'media',
-        meta: '50 personas',
-        progreso: 48,
-        fecha_limite: '2025-02-15'
-      },
-      {
-        id: 3,
-        titulo: 'Generar impacto mediático',
-        descripcion: 'Conseguir cobertura en al menos 3 medios de comunicación',
-        tipo: 'cualitativo',
-        prioridad: 'media',
-        meta: '3 medios',
-        progreso: 67,
-        fecha_limite: '2025-02-10'
-      }
-    ]
-    
-    // Cargar actividades de ejemplo
-    actividades.value = [
-      {
-        id: 1,
-        nombre: 'Recogida de firmas en Plaza Mayor',
-        fecha: '2025-01-20',
-        hora_inicio: '10:00',
-        hora_fin: '14:00',
-        lugar: 'Plaza Mayor, Madrid',
-        descripcion: 'Recogida de firmas para la iniciativa por una sociedad laica',
-        voluntarios_necesarios: 5,
-        voluntarios_confirmados: 3,
-        completada: true,
-        materiales_necesarios: 'Mesas, sillas, folletos, formularios'
-      },
-      {
-        id: 2,
-        nombre: 'Charla: "Laicismo en el siglo XXI"',
-        fecha: '2025-01-25',
-        hora_inicio: '18:00',
-        hora_fin: '20:00',
-        lugar: 'Centro Cultural Municipal',
-        descripcion: 'Conferencia sobre los desafíos del laicismo en la sociedad actual',
-        voluntarios_necesarios: 3,
-        voluntarios_confirmados: 2,
-        completada: false,
-        materiales_necesarios: 'Proyector, micrófono, sillas'
-      },
-      {
-        id: 3,
-        nombre: 'Taller para jóvenes',
-        fecha: '2025-02-05',
-        hora_inicio: '16:00',
-        hora_fin: '19:00',
-        lugar: 'Casa de la Juventud',
-        descripcion: 'Taller interactivo sobre valores laicos para jóvenes',
-        voluntarios_necesarios: 4,
-        voluntarios_confirmados: 4,
-        completada: false
-      }
-    ]
-    
-    // Cargar recursos de ejemplo
-    recursosHumanos.value = [
-      {
-        id: 1,
-        rol: 'Coordinador general',
-        personas: 1,
-        descripcion: 'Responsable de la organización y supervisión'
-      },
-      {
-        id: 2,
-        rol: 'Voluntarios logística',
-        personas: 5,
-        descripcion: 'Montaje, atención al público, apoyo general'
-      },
-      {
-        id: 3,
-        rol: 'Comunicación',
-        personas: 2,
-        descripcion: 'Redes sociales, prensa, fotografía'
-      }
-    ]
-    
-    recursosMateriales.value = [
-      {
-        id: 1,
-        nombre: 'Material impreso',
-        cantidad: 500,
-        unidad: 'unidades',
-        costo: 250,
-        descripcion: 'Folletos informativos y carteles'
-      },
-      {
-        id: 2,
-        nombre: 'Equipo de sonido',
-        cantidad: 1,
-        unidad: 'set',
-        costo: 150,
-        descripcion: 'Alquiler para las charlas'
-      },
-      {
-        id: 3,
-        nombre: 'Merchandising',
-        cantidad: 100,
-        unidad: 'unidades',
-        costo: 300,
-        descripcion: 'Camisetas y chapas promocionales'
-      }
-    ]
-    
   } catch (err) {
     error.value = err
     console.error('Error cargando campaña:', err)
@@ -377,24 +213,14 @@ const cargarCampania = async () => {
 }
 
 const claseEstado = computed(() => {
-  const estado = campania.value?.estado
-  if (estado === 'ACTIVA') return 'bg-green-100 text-green-800'
-  if (estado === 'PLANIFICADA') return 'bg-blue-100 text-blue-800'
-  if (estado === 'FINALIZADA') return 'bg-gray-100 text-gray-800'
-  if (estado === 'CANCELADA') return 'bg-red-100 text-red-800'
+  const codigo = campania.value?.estado?.codigo
+  if (codigo === 'ACTIVA') return 'bg-green-100 text-green-800'
+  if (codigo === 'PLANIFICADA') return 'bg-blue-100 text-blue-800'
+  if (codigo === 'FINALIZADA') return 'bg-gray-100 text-gray-800'
+  if (codigo === 'CANCELADA') return 'bg-red-100 text-red-800'
+  if (codigo === 'SUSPENDIDA') return 'bg-yellow-100 text-yellow-800'
   return 'bg-gray-100 text-gray-800'
 })
-
-const obtenerNombreEstado = (estado) => {
-  const estados = {
-    'ACTIVA': 'Activa',
-    'PLANIFICADA': 'Planificada',
-    'FINALIZADA': 'Finalizada',
-    'CANCELADA': 'Cancelada',
-    'SUSPENDIDA': 'Suspendida'
-  }
-  return estados[estado] || estado
-}
 
 const formatearFecha = (fecha) => {
   if (!fecha) return 'No especificada'

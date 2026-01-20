@@ -1,32 +1,77 @@
+// Queries GraphQL para el módulo de campañas
+// IMPORTANTE: Strawberry usa camelCase automáticamente
+// NO usar campos 'codigo' - solo se identifican por UUID
+
 // Query para obtener campañas
 export const GET_CAMPANIAS = `
-  query Campanias($filters: CampaniaFilters) {
-    campanias(filters: $filters) {
+  query Campanias {
+    campanias {
       id
-      codigo
       nombre
-      descripcion_corta
-      tipo_campania {
+      lema
+      descripcionCorta
+      descripcionLarga
+      urlExterna
+      tipoCampania {
         id
         nombre
       }
-      estado_campania {
+      estado {
         id
         nombre
-        color
       }
-      fecha_inicio_plan
-      fecha_fin_plan
-      meta_recaudacion
+      fechaInicioPlan
+      fechaFinPlan
+      fechaInicioReal
+      fechaFinReal
+      objetivoPrincipal
+      metaRecaudacion
+      metaParticipantes
+      metaFirmas
+    }
+  }
+`
+
+// Query para obtener una campaña por ID
+export const GET_CAMPANIA = `
+  query Campania($id: UUID!) {
+    campanias(filter: {id: {eq: $id}}) {
+      id
+      nombre
+      lema
+      descripcionCorta
+      descripcionLarga
+      urlExterna
+      tipoCampania {
+        id
+        nombre
+      }
+      estado {
+        id
+        nombre
+      }
       responsable {
         id
         nombre
         apellido1
+        apellido2
+        agrupacion {
+          id
+          nombre
+        }
       }
       agrupacion {
         id
         nombre
       }
+      fechaInicioPlan
+      fechaFinPlan
+      fechaInicioReal
+      fechaFinReal
+      objetivoPrincipal
+      metaRecaudacion
+      metaParticipantes
+      metaFirmas
     }
   }
 `
@@ -37,7 +82,6 @@ export const GET_TIPOS_CAMPANIA = `
     tiposCampania {
       id
       nombre
-      codigo
       activo
     }
   }
@@ -49,9 +93,8 @@ export const GET_ESTADOS_CAMPANIA = `
     estadosCampania {
       id
       nombre
-      codigo
+      esEstadoFinal
       orden
-      color
       activo
     }
   }

@@ -9,6 +9,7 @@ import ListaGrupos from '@/views/grupos/ListaGrupos.vue'
 import ListaFinanciero from '@/views/financiero/ListaFinanciero.vue'
 import ListaVoluntarios from '@/views/voluntariado/ListaVoluntarios.vue'
 import ListaUsuarios from '@/views/usuarios/ListaUsuarios.vue'
+import ParametrizacionIndex from '@/views/parametrizacion/ParametrizacionIndex.vue'
 
 // Configuración de rutas
 const routes = [
@@ -97,8 +98,38 @@ const routes = [
     name: 'EditarCampania',
     meta: { requiresAuth: true },
     props: true
+  },
+  // Rutas de Parametrización
+  {
+    path: '/parametrizacion',
+    component: ParametrizacionIndex,
+    name: 'Parametrizacion',
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/parametrizacion/tipos-miembro',
+    component: () => import('@/views/parametrizacion/catalogos/TiposMiembro.vue'),
+    name: 'TiposMiembro',
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/parametrizacion/estados-miembro',
+    component: () => import('@/views/parametrizacion/catalogos/EstadosMiembro.vue'),
+    name: 'EstadosMiembro',
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/parametrizacion/motivos-baja',
+    component: () => import('@/views/parametrizacion/catalogos/MotivosBaja.vue'),
+    name: 'MotivosBaja',
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/parametrizacion/estados-cuota',
+    component: () => import('@/views/parametrizacion/catalogos/EstadosCuota.vue'),
+    name: 'EstadosCuota',
+    meta: { requiresAuth: true }
   }
-
 ]
 
 const router = createRouter({

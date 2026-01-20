@@ -112,66 +112,64 @@
       >
         <div class="p-6">
           <div class="flex justify-between items-start mb-3">
-            <span :class="getEstadoClass(campania.estado)">
-              {{ campania.estado }}
+            <span :class="getEstadoClass(campania.estado?.nombre)">
+              {{ campania.estado?.nombre || 'Sin estado' }}
             </span>
-            <span class="text-xs text-gray-500">{{ campania.codigo }}</span>
+            <span v-if="campania.tipoCampania" class="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded">
+              {{ campania.tipoCampania.nombre }}
+            </span>
           </div>
 
-          <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
-            {{ campania.nombre }}
+          <h3 class="text-lg font-semibold text-gray-900 mb-1 group-hover:text-purple-700 transition-colors">
+            {{ campania.lema || campania.nombre }}
           </h3>
-          <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ campania.descripcion }}</p>
+          <p v-if="campania.lema" class="text-sm text-gray-500 mb-2">{{ campania.nombre }}</p>
+          <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ campania.descripcionCorta }}</p>
 
           <div class="space-y-2 text-sm text-gray-500">
-            <div class="flex items-center">
+            <div v-if="campania.fechaInicioPlan || campania.fechaFinPlan" class="flex items-center">
               <span class="mr-2">📅</span>
-              <span>{{ formatDate(campania.fechaInicio) }} - {{ formatDate(campania.fechaFin) }}</span>
+              <span>{{ formatDate(campania.fechaInicioPlan) }} - {{ formatDate(campania.fechaFinPlan) }}</span>
             </div>
             <div v-if="campania.metaRecaudacion" class="flex items-center">
               <span class="mr-2">🎯</span>
               <span>Meta: {{ formatCurrency(campania.metaRecaudacion) }}</span>
             </div>
-            <div v-if="campania.responsable" class="flex items-center">
-              <span class="mr-2">👤</span>
-              <span>{{ campania.responsable }}</span>
+            <div v-if="campania.metaFirmas" class="flex items-center">
+              <span class="mr-2">✍️</span>
+              <span>Objetivo: {{ campania.metaFirmas.toLocaleString() }} firmas</span>
             </div>
           </div>
 
-          <!-- Barra de progreso si hay meta -->
-          <div v-if="campania.metaRecaudacion && campania.recaudado" class="mt-4">
-            <div class="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Recaudado</span>
-              <span>{{ Math.round((campania.recaudado / campania.metaRecaudacion) * 100) }}%</span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-2">
-              <div
-                class="bg-purple-600 h-2 rounded-full transition-all duration-300"
-                :style="{ width: Math.min((campania.recaudado / campania.metaRecaudacion) * 100, 100) + '%' }"
-              ></div>
-            </div>
+          <!-- URL externa -->
+          <div v-if="campania.urlExterna" class="mt-3">
+            <a
+              :href="campania.urlExterna"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1"
+              @click.stop
+            >
+              <span>🔗</span>
+              <span>Ver en laicismo.org</span>
+            </a>
           </div>
         </div>
 
         <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
           <div class="text-xs text-gray-500 flex items-center gap-1">
-            <span>👥</span>
-            <span>{{ campania.participantes || 0 }} participantes</span>
+            <span v-if="campania.metaParticipantes">
+              🎯 {{ campania.metaParticipantes }} participantes objetivo
+            </span>
           </div>
           <div class="flex space-x-2">
-            <router-link 
+            <router-link
               :to="`/campanias/${campania.id}`"
               class="text-purple-600 hover:text-purple-800 text-sm font-medium px-3 py-1 rounded hover:bg-purple-50 transition-colors"
               @click.stop
             >
               Ver detalles
             </router-link>
-            <button 
-              @click.stop="editarCampania(campania)"
-              class="text-gray-600 hover:text-gray-800 text-sm font-medium px-3 py-1 rounded hover:bg-gray-100 transition-colors"
-            >
-              Editar
-            </button>
           </div>
         </div>
       </div>
@@ -183,6 +181,8 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import AppLayout from '@/components/common/AppLayout.vue'
+import { executeQuery } from '@/graphql/client'
+import { GET_CAMPANIAS, GET_TIPOS_CAMPANIA } from '@/graphql/queries/campanias'
 
 const router = useRouter()
 
@@ -199,7 +199,6 @@ const filters = ref({
   anio: ''
 })
 
-// Datos de ejemplo - reemplazar con datos reales de GraphQL
 onMounted(() => {
   loadCampanias()
   loadTiposCampania()
@@ -208,107 +207,10 @@ onMounted(() => {
 const loadCampanias = async () => {
   loading.value = true
   error.value = null
-  
+
   try {
-    // Simulación de carga de datos
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    campanias.value = [
-      {
-        id: 1,
-        codigo: 'CAMP-2025-001',
-        nombre: 'Campaña Día del Laicismo 2025',
-        descripcion: 'Actividades y eventos para celebrar el Día Internacional del Laicismo con charlas, conferencias y actos públicos.',
-        estado: 'ACTIVA',
-        fechaInicio: '2025-01-15',
-        fechaFin: '2025-02-15',
-        metaRecaudacion: 5000,
-        recaudado: 2350,
-        responsable: 'María García',
-        participantes: 24,
-        tipo_campania_id: 1,
-        estado_campania_id: 2,
-        descripcion_larga: 'Esta es una campaña completa para celebrar el Día Internacional del Laicismo. Incluye charlas, conferencias, actos públicos y actividades de concienciación.',
-        fecha_inicio_plan: '2025-01-15',
-        fecha_fin_plan: '2025-02-15',
-        fecha_inicio_real: '2025-01-15',
-        fecha_fin_real: null,
-        objetivo_principal: 'Promover los valores laicos en la sociedad',
-        meta_participantes: 50,
-        responsable_id: 1,
-        agrupacion_id: 1
-      },
-      {
-        id: 2,
-        codigo: 'CAMP-2025-002',
-        nombre: 'Jornadas sobre Educación Laica',
-        descripcion: 'Ciclo de conferencias sobre la importancia de la educación laica en el sistema educativo.',
-        estado: 'PLANIFICADA',
-        fechaInicio: '2025-03-01',
-        fechaFin: '2025-03-30',
-        metaRecaudacion: 3000,
-        recaudado: 0,
-        responsable: 'Juan Martínez',
-        participantes: 8,
-        tipo_campania_id: 2,
-        estado_campania_id: 1,
-        descripcion_larga: 'Ciclo completo de conferencias sobre educación laica con expertos nacionales e internacionales.',
-        fecha_inicio_plan: '2025-03-01',
-        fecha_fin_plan: '2025-03-30',
-        fecha_inicio_real: null,
-        fecha_fin_real: null,
-        objetivo_principal: 'Concienciar sobre la importancia de la educación laica',
-        meta_participantes: 100,
-        responsable_id: 2,
-        agrupacion_id: 1
-      },
-      {
-        id: 3,
-        codigo: 'CAMP-2024-015',
-        nombre: 'Campaña Navidad Laica 2024',
-        descripcion: 'Campaña de concienciación sobre alternativas laicas en las festividades.',
-        estado: 'FINALIZADA',
-        fechaInicio: '2024-12-01',
-        fechaFin: '2024-12-31',
-        metaRecaudacion: 2000,
-        recaudado: 2150,
-        responsable: 'Ana López',
-        participantes: 45,
-        tipo_campania_id: 3,
-        estado_campania_id: 3,
-        descripcion_larga: 'Campaña exitosa de concienciación sobre alternativas laicas durante las festividades navideñas.',
-        fecha_inicio_plan: '2024-12-01',
-        fecha_fin_plan: '2024-12-31',
-        fecha_inicio_real: '2024-12-01',
-        fecha_fin_real: '2024-12-31',
-        objetivo_principal: 'Ofrecer alternativas laicas a las celebraciones navideñas',
-        meta_participantes: 30,
-        responsable_id: 3,
-        agrupacion_id: 2
-      },
-      {
-        id: 4,
-        codigo: 'CAMP-2025-003',
-        nombre: 'Defensa de la Laicidad Institucional',
-        descripcion: 'Campaña de denuncia de vulneraciones del principio de laicidad en instituciones públicas.',
-        estado: 'ACTIVA',
-        fechaInicio: '2025-01-01',
-        fechaFin: '2025-12-31',
-        responsable: 'Carlos Ruiz',
-        participantes: 32,
-        tipo_campania_id: 4,
-        estado_campania_id: 2,
-        descripcion_larga: 'Campaña continua de monitoreo y denuncia de vulneraciones de la laicidad en instituciones públicas.',
-        fecha_inicio_plan: '2025-01-01',
-        fecha_fin_plan: '2025-12-31',
-        fecha_inicio_real: '2025-01-01',
-        fecha_fin_real: null,
-        objetivo_principal: 'Garantizar el respeto a la laicidad en instituciones públicas',
-        meta_participantes: 200,
-        responsable_id: 4,
-        agrupacion_id: 3
-      }
-    ]
+    const data = await executeQuery(GET_CAMPANIAS)
+    campanias.value = data.campanias || []
   } catch (err) {
     error.value = err
     console.error('Error cargando campañas:', err)
@@ -317,13 +219,13 @@ const loadCampanias = async () => {
   }
 }
 
-const loadTiposCampania = () => {
-  tiposCampania.value = [
-    { id: 1, nombre: 'Eventos', codigo: 'EVENTOS' },
-    { id: 2, nombre: 'Formación', codigo: 'FORMACION' },
-    { id: 3, nombre: 'Denuncia', codigo: 'DENUNCIA' },
-    { id: 4, nombre: 'Recaudación', codigo: 'RECAUDACION' }
-  ]
+const loadTiposCampania = async () => {
+  try {
+    const data = await executeQuery(GET_TIPOS_CAMPANIA)
+    tiposCampania.value = data.tipos_campania || []
+  } catch (err) {
+    console.error('Error cargando tipos de campaña:', err)
+  }
 }
 
 const onSearch = () => {
@@ -331,15 +233,16 @@ const onSearch = () => {
   console.log('Buscando:', searchQuery.value)
 }
 
-const getEstadoClass = (estado) => {
+const getEstadoClass = (estadoNombre) => {
+  // Mapeo por nombre de estado para estilos
   const classes = {
-    'ACTIVA': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800',
-    'PLANIFICADA': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800',
-    'FINALIZADA': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800',
-    'CANCELADA': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800',
-    'SUSPENDIDA': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800'
+    'Activa': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800',
+    'Planificada': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800',
+    'Finalizada': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800',
+    'Cancelada': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800',
+    'Suspendida': 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800'
   }
-  return classes[estado] || 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800'
+  return classes[estadoNombre] || 'inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800'
 }
 
 const formatDate = (dateString) => {
@@ -354,10 +257,6 @@ const formatCurrency = (amount) => {
 
 const verDetalles = (campania) => {
   router.push(`/campanias/${campania.id}`)
-}
-
-const editarCampania = (campania) => {
-  router.push(`/campanias/${campania.id}/editar`)
 }
 
 watch(filters, () => {

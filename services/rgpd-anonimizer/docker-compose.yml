@@ -1,0 +1,57 @@
+# Docker Compose para el servicio de Anonimización RGPD
+#
+# Uso:
+#   docker-compose up --build           # Ejecuta una vez
+#   docker-compose up -d rgpd-scheduler # Modo scheduler (background)
+#   docker-compose run rgpd-anonimizer --dry-run  # Simulación
+
+services:
+  # Ejecución única (una vez y termina)
+  rgpd-anonimizer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: siga-rgpd-anonimizer
+    environment:
+      - DB_HOST=${DB_HOST:-localhost}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-postgres}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - BATCH_SIZE=${BATCH_SIZE:-100}
+      - DRY_RUN=${DRY_RUN:-false}
+      - FORCE_ALL=${FORCE_ALL:-false}
+    networks:
+      - siga-network
+    restart: "no"
+
+  # Modo scheduler (corre continuamente)
+  rgpd-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: siga-rgpd-scheduler
+    command: ["--schedule"]
+    environment:
+      - DB_HOST=${DB_HOST:-localhost}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-postgres}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - BATCH_SIZE=${BATCH_SIZE:-100}
+      - SCHEDULE_HOUR=${SCHEDULE_HOUR:-3}
+      - SCHEDULE_MINUTE=${SCHEDULE_MINUTE:-0}
+      - FORCE_ALL=${FORCE_ALL:-false}
+    networks:
+      - siga-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('OK')"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+
+networks:
+  siga-network:
+    external: true
+    name: siga_default

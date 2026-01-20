@@ -17,6 +17,10 @@ from app.domains.core.models.estados import EstadoCuota
 from app.domains.core.models.estados import EstadoCampania
 from app.domains.core.models.estados import EstadoActividad
 from app.domains.core.models.estados import EstadoParticipante
+from app.domains.core.models.estados import EstadoOrdenCobro
+from app.domains.core.models.estados import EstadoRemesa
+from app.domains.core.models.estados import EstadoDonacion
+from app.domains.miembros.models.motivo_baja import MotivoBaja
 
 
 async def crear_tipos_miembro(session: AsyncSession) -> dict[str, uuid.UUID]:
@@ -422,6 +426,314 @@ async def crear_estados_participante(session: AsyncSession) -> dict[str, uuid.UU
     return mapeo
 
 
+async def crear_estados_orden_cobro(session: AsyncSession) -> dict[str, uuid.UUID]:
+    """Crea los estados de orden de cobro y retorna mapeo código → UUID."""
+
+    estados_data = [
+        {
+            "codigo": "PENDIENTE",
+            "nombre": "Pendiente",
+            "descripcion": "Orden creada, pendiente de procesar",
+            "color": "#FFC107",
+            "orden": 1,
+            "activo": True
+        },
+        {
+            "codigo": "PROCESADA",
+            "nombre": "Procesada",
+            "descripcion": "Orden procesada, cobro realizado",
+            "color": "#28A745",
+            "orden": 2,
+            "activo": True
+        },
+        {
+            "codigo": "FALLIDA",
+            "nombre": "Fallida",
+            "descripcion": "Cobro fallido",
+            "color": "#DC3545",
+            "orden": 3,
+            "activo": True
+        },
+        {
+            "codigo": "ANULADA",
+            "nombre": "Anulada",
+            "descripcion": "Orden anulada",
+            "color": "#6C757D",
+            "orden": 4,
+            "activo": True
+        }
+    ]
+
+    mapeo = {}
+
+    for estado_data in estados_data:
+        result = await session.execute(
+            select(EstadoOrdenCobro).where(EstadoOrdenCobro.codigo == estado_data["codigo"])
+        )
+        estado_existente = result.scalar_one_or_none()
+
+        if estado_existente:
+            print(f"  [OK] EstadoOrdenCobro '{estado_data['codigo']}' ya existe (UUID: {estado_existente.id})")
+            mapeo[estado_data["codigo"]] = estado_existente.id
+        else:
+            estado = EstadoOrdenCobro(**estado_data)
+            session.add(estado)
+            await session.flush()
+            print(f"  + EstadoOrdenCobro '{estado_data['codigo']}' creado (UUID: {estado.id})")
+            mapeo[estado_data["codigo"]] = estado.id
+
+    return mapeo
+
+
+async def crear_estados_remesa(session: AsyncSession) -> dict[str, uuid.UUID]:
+    """Crea los estados de remesa SEPA y retorna mapeo código → UUID."""
+
+    estados_data = [
+        {
+            "codigo": "BORRADOR",
+            "nombre": "Borrador",
+            "descripcion": "Remesa en creación",
+            "color": "#6C757D",
+            "orden": 1,
+            "activo": True
+        },
+        {
+            "codigo": "GENERADA",
+            "nombre": "Generada",
+            "descripcion": "Remesa generada, pendiente de envío",
+            "color": "#17A2B8",
+            "orden": 2,
+            "activo": True
+        },
+        {
+            "codigo": "ENVIADA",
+            "nombre": "Enviada",
+            "descripcion": "Remesa enviada al banco",
+            "color": "#FFC107",
+            "orden": 3,
+            "activo": True
+        },
+        {
+            "codigo": "PROCESADA",
+            "nombre": "Procesada",
+            "descripcion": "Remesa procesada por el banco",
+            "color": "#28A745",
+            "orden": 4,
+            "activo": True
+        },
+        {
+            "codigo": "RECHAZADA",
+            "nombre": "Rechazada",
+            "descripcion": "Remesa rechazada por el banco",
+            "color": "#DC3545",
+            "orden": 5,
+            "activo": True
+        },
+        {
+            "codigo": "PARCIAL",
+            "nombre": "Parcial",
+            "descripcion": "Remesa procesada parcialmente",
+            "color": "#FD7E14",
+            "orden": 6,
+            "activo": True
+        }
+    ]
+
+    mapeo = {}
+
+    for estado_data in estados_data:
+        result = await session.execute(
+            select(EstadoRemesa).where(EstadoRemesa.codigo == estado_data["codigo"])
+        )
+        estado_existente = result.scalar_one_or_none()
+
+        if estado_existente:
+            print(f"  [OK] EstadoRemesa '{estado_data['codigo']}' ya existe (UUID: {estado_existente.id})")
+            mapeo[estado_data["codigo"]] = estado_existente.id
+        else:
+            estado = EstadoRemesa(**estado_data)
+            session.add(estado)
+            await session.flush()
+            print(f"  + EstadoRemesa '{estado_data['codigo']}' creado (UUID: {estado.id})")
+            mapeo[estado_data["codigo"]] = estado.id
+
+    return mapeo
+
+
+async def crear_estados_donacion(session: AsyncSession) -> dict[str, uuid.UUID]:
+    """Crea los estados de donación y retorna mapeo código → UUID."""
+
+    estados_data = [
+        {
+            "codigo": "PENDIENTE",
+            "nombre": "Pendiente",
+            "descripcion": "Donación prometida pero no recibida",
+            "color": "#FFC107",
+            "orden": 1,
+            "activo": True
+        },
+        {
+            "codigo": "RECIBIDA",
+            "nombre": "Recibida",
+            "descripcion": "Donación recibida",
+            "color": "#28A745",
+            "orden": 2,
+            "activo": True
+        },
+        {
+            "codigo": "CERTIFICADA",
+            "nombre": "Certificada",
+            "descripcion": "Certificado de donación emitido",
+            "color": "#007BFF",
+            "orden": 3,
+            "activo": True
+        },
+        {
+            "codigo": "ANULADA",
+            "nombre": "Anulada",
+            "descripcion": "Donación anulada",
+            "color": "#DC3545",
+            "orden": 4,
+            "activo": True
+        }
+    ]
+
+    mapeo = {}
+
+    for estado_data in estados_data:
+        result = await session.execute(
+            select(EstadoDonacion).where(EstadoDonacion.codigo == estado_data["codigo"])
+        )
+        estado_existente = result.scalar_one_or_none()
+
+        if estado_existente:
+            print(f"  [OK] EstadoDonacion '{estado_data['codigo']}' ya existe (UUID: {estado_existente.id})")
+            mapeo[estado_data["codigo"]] = estado_existente.id
+        else:
+            estado = EstadoDonacion(**estado_data)
+            session.add(estado)
+            await session.flush()
+            print(f"  + EstadoDonacion '{estado_data['codigo']}' creado (UUID: {estado.id})")
+            mapeo[estado_data["codigo"]] = estado.id
+
+    return mapeo
+
+
+async def crear_estados_notificacion(session: AsyncSession) -> dict[str, uuid.UUID]:
+    """Crea los estados de notificación y retorna mapeo código → UUID."""
+    from app.domains.core.models.estados import EstadoNotificacion
+
+    estados_data = [
+        {
+            "codigo": "PENDIENTE",
+            "nombre": "Pendiente",
+            "descripcion": "Notificación creada pero no enviada",
+            "color": "#FFC107",
+            "orden": 1,
+            "activo": True
+        },
+        {
+            "codigo": "ENVIADA",
+            "nombre": "Enviada",
+            "descripcion": "Notificación enviada al canal correspondiente",
+            "color": "#17A2B8",
+            "orden": 2,
+            "activo": True
+        },
+        {
+            "codigo": "LEIDA",
+            "nombre": "Leída",
+            "descripcion": "Notificación leída por el usuario",
+            "color": "#28A745",
+            "orden": 3,
+            "activo": True
+        },
+        {
+            "codigo": "ERROR",
+            "nombre": "Error",
+            "descripcion": "Error al enviar la notificación",
+            "color": "#DC3545",
+            "orden": 4,
+            "activo": True
+        }
+    ]
+
+    mapeo = {}
+
+    for estado_data in estados_data:
+        result = await session.execute(
+            select(EstadoNotificacion).where(EstadoNotificacion.codigo == estado_data["codigo"])
+        )
+        estado_existente = result.scalar_one_or_none()
+
+        if estado_existente:
+            print(f"  [OK] EstadoNotificacion '{estado_data['codigo']}' ya existe (UUID: {estado_existente.id})")
+            mapeo[estado_data["codigo"]] = estado_existente.id
+        else:
+            estado = EstadoNotificacion(**estado_data)
+            session.add(estado)
+            await session.flush()
+            print(f"  + EstadoNotificacion '{estado_data['codigo']}' creado (UUID: {estado.id})")
+            mapeo[estado_data["codigo"]] = estado.id
+
+    return mapeo
+
+
+async def crear_motivos_baja(session: AsyncSession) -> dict[str, uuid.UUID]:
+    """Crea los motivos de baja y retorna mapeo código → UUID."""
+
+    motivos_data = [
+        {
+            "codigo": "VOLUNTARIA",
+            "nombre": "Baja voluntaria",
+            "descripcion": "El miembro solicita la baja por voluntad propia",
+            "requiere_documentacion": False,
+            "activo": True
+        },
+        {
+            "codigo": "IMPAGO",
+            "nombre": "Baja por impago",
+            "descripcion": "Baja automática por cuotas impagadas durante varios ejercicios",
+            "requiere_documentacion": False,
+            "activo": True
+        },
+        {
+            "codigo": "FALLECIMIENTO",
+            "nombre": "Fallecimiento",
+            "descripcion": "Baja por defunción del miembro",
+            "requiere_documentacion": True,
+            "activo": True
+        },
+        {
+            "codigo": "EXPULSION",
+            "nombre": "Expulsión",
+            "descripcion": "Baja disciplinaria por incumplimiento grave de estatutos",
+            "requiere_documentacion": True,
+            "activo": True
+        }
+    ]
+
+    mapeo = {}
+
+    for motivo_data in motivos_data:
+        result = await session.execute(
+            select(MotivoBaja).where(MotivoBaja.codigo == motivo_data["codigo"])
+        )
+        motivo_existente = result.scalar_one_or_none()
+
+        if motivo_existente:
+            print(f"  [OK] MotivoBaja '{motivo_data['codigo']}' ya existe (UUID: {motivo_existente.id})")
+            mapeo[motivo_data["codigo"]] = motivo_existente.id
+        else:
+            motivo = MotivoBaja(**motivo_data)
+            session.add(motivo)
+            await session.flush()
+            print(f"  + MotivoBaja '{motivo_data['codigo']}' creado (UUID: {motivo.id})")
+            mapeo[motivo_data["codigo"]] = motivo.id
+
+    return mapeo
+
+
 async def main():
     """Función principal que ejecuta la creación de catálogos."""
 
@@ -461,6 +773,21 @@ async def main():
             print("\n6. Creando Estados de Participante...")
             estados_participante = await crear_estados_participante(session)
 
+            print("\n7. Creando Estados de Orden de Cobro...")
+            estados_orden_cobro = await crear_estados_orden_cobro(session)
+
+            print("\n8. Creando Estados de Remesa...")
+            estados_remesa = await crear_estados_remesa(session)
+
+            print("\n9. Creando Estados de Donación...")
+            estados_donacion = await crear_estados_donacion(session)
+
+            print("\n10. Creando Estados de Notificación...")
+            estados_notificacion = await crear_estados_notificacion(session)
+
+            print("\n11. Creando Motivos de Baja...")
+            motivos_baja = await crear_motivos_baja(session)
+
             # Commit final
             await session.commit()
 
@@ -491,6 +818,26 @@ async def main():
 
             print("\nEstados de Participante:")
             for codigo, uuid_val in estados_participante.items():
+                print(f"  {codigo}: {uuid_val}")
+
+            print("\nEstados de Orden de Cobro:")
+            for codigo, uuid_val in estados_orden_cobro.items():
+                print(f"  {codigo}: {uuid_val}")
+
+            print("\nEstados de Remesa:")
+            for codigo, uuid_val in estados_remesa.items():
+                print(f"  {codigo}: {uuid_val}")
+
+            print("\nEstados de Donación:")
+            for codigo, uuid_val in estados_donacion.items():
+                print(f"  {codigo}: {uuid_val}")
+
+            print("\nEstados de Notificación:")
+            for codigo, uuid_val in estados_notificacion.items():
+                print(f"  {codigo}: {uuid_val}")
+
+            print("\nMotivos de Baja:")
+            for codigo, uuid_val in motivos_baja.items():
                 print(f"  {codigo}: {uuid_val}")
 
             print("\n[OK] Todos los catálogos están listos para la importación de datos.\n")

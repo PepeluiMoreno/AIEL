@@ -10,6 +10,7 @@ from .estados import (
     EstadoOrdenCobro,
     EstadoRemesa,
     EstadoDonacion,
+    EstadoNotificacion,
     HistorialEstado,
 )
 from .seguridad import Sesion, HistorialSeguridad, IPBloqueada, IntentoAcceso
@@ -28,6 +29,7 @@ __all__ = [
     'EstadoOrdenCobro',
     'EstadoRemesa',
     'EstadoDonacion',
+    'EstadoNotificacion',
     'HistorialEstado',
     # Seguridad
     'Sesion',

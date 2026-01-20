@@ -130,15 +130,31 @@ class EstadoDonacion(EstadoBase):
     # ANULADA: Donación anulada
 
 
+class EstadoNotificacion(EstadoBase):
+    """Estados para notificaciones."""
+    __tablename__ = 'estados_notificacion'
+
+    # Posibles estados:
+    # PENDIENTE: Notificación creada pero no enviada
+    # ENVIADA: Notificación enviada al canal correspondiente
+    # LEIDA: Notificación leída por el usuario
+    # ERROR: Error al enviar la notificación
+
+
 class HistorialEstado(BaseModel):
-    """Registro genérico de cambios de estado de cualquier entidad."""
+    """Registro genérico de cambios de estado de cualquier entidad.
+
+    Usa UUIDs para referenciar estados en lugar de códigos literales.
+    El campo estado_tabla indica la tabla de estados correspondiente.
+    """
     __tablename__ = 'historial_estados'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     entidad_tipo: Mapped[str] = mapped_column(String(50), nullable=False, index=True)  # Nombre de la clase (ej: 'cuotaanual')
-    entidad_id: Mapped[str] = mapped_column(String(100), nullable=False, index=True)  # UUID de la entidad
-    estado_anterior_codigo: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    estado_nuevo_codigo: Mapped[str] = mapped_column(String(50), nullable=False)
+    entidad_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False, index=True)  # UUID de la entidad
+    estado_tabla: Mapped[str] = mapped_column(String(50), nullable=False)  # Tabla de estados (ej: 'estados_cuota')
+    estado_anterior_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, nullable=True)  # UUID del estado anterior
+    estado_nuevo_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)  # UUID del nuevo estado
     motivo: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     fecha_cambio: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False, index=True)
     usuario_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey('usuarios.id'), nullable=True)
@@ -148,4 +164,4 @@ class HistorialEstado(BaseModel):
 
     def __repr__(self) -> str:
         return (f"<HistorialEstado(entidad='{self.entidad_tipo}:{self.entidad_id}', "
-                f"{self.estado_anterior_codigo} -> {self.estado_nuevo_codigo})>")
+                f"{self.estado_anterior_id} -> {self.estado_nuevo_id})>")

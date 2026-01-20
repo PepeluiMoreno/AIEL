@@ -1,100 +1,209 @@
-// Query para obtener transacciones con filtros
-export const GET_TRANSACCIONES = `
-  query Transacciones($filters: TransaccionFilters) {
-    transacciones(filters: $filters) {
+// Queries GraphQL para el módulo financiero
+// IMPORTANTE: Strawberry usa camelCase automáticamente
+// NO usar campos 'codigo' - solo se identifican por UUID
+
+// Query para obtener cuotas anuales
+export const GET_CUOTAS_ANUALES = `
+  query CuotasAnuales($limit: Int, $offset: Int) {
+    cuotasAnuales(limit: $limit, offset: $offset) {
       id
-      tipo
-      concepto
+      ejercicio
       importe
+      importePagado
+      fechaPago
+      modoIngreso
+      miembro {
+        id
+        nombre
+        apellido1
+        apellido2
+      }
+      estado {
+        id
+        nombre
+        color
+      }
+      agrupacion {
+        id
+        nombre
+      }
+      fechaCreacion
+    }
+  }
+`
+
+// Query para obtener cuotas por miembro
+export const GET_CUOTAS_BY_MIEMBRO = `
+  query CuotasByMiembro($miembroId: UUID!) {
+    cuotasAnuales(filter: {miembroId: {eq: $miembroId}}) {
+      id
+      ejercicio
+      importe
+      importePagado
+      fechaPago
+      modoIngreso
+      estado {
+        id
+        nombre
+        color
+      }
+    }
+  }
+`
+
+// Query para obtener donaciones
+export const GET_DONACIONES = `
+  query Donaciones($limit: Int, $offset: Int) {
+    donaciones(limit: $limit, offset: $offset) {
+      id
       fecha
-      estado
-      miembro {
-        id
-        nombre
-        apellido1
-      }
-      metodo_pago
-      referencia
-    }
-  }
-`
-
-// Query para obtener una transacción por ID
-export const GET_TRANSACCION_BY_ID = `
-  query Transaccion($id: Int!) {
-    transaccion(id: $id) {
-      id
-      tipo
-      concepto
       importe
-      fecha
-      estado
-      miembro {
+      gastos
+      donanteNombre
+      donanteDni
+      concepto {
         id
         nombre
-        apellido1
-        email
       }
-      metodo_pago
+      estado {
+        id
+        nombre
+      }
+      campania {
+        id
+        nombre
+      }
+      certificadoEmitido
+      anonima
+      observaciones
+      fechaCreacion
+    }
+  }
+`
+
+// Query para obtener conceptos de donación
+export const GET_DONACION_CONCEPTOS = `
+  query DonacionConceptos {
+    donacionConceptos {
+      id
+      nombre
+      descripcion
+      activo
+    }
+  }
+`
+
+// Query para obtener remesas
+export const GET_REMESAS = `
+  query Remesas($limit: Int, $offset: Int) {
+    remesas(limit: $limit, offset: $offset) {
+      id
       referencia
-      notas
-      created_at
-      updated_at
-    }
-  }
-`
-
-// Query para obtener cuotas
-export const GET_CUOTAS = `
-  query Cuotas($filters: CuotaFilters) {
-    cuotas(filters: $filters) {
-      id
-      miembro {
+      fechaCreacion
+      fechaEnvio
+      fechaCobro
+      importeTotal
+      gastos
+      numOrdenes
+      estado {
         id
         nombre
-        apellido1
       }
-      tipo_cuota
-      importe
-      periodicidad
-      fecha_inicio
-      fecha_fin
-      estado
-      ultimo_cobro
+      archivoSepa
+      observaciones
     }
   }
 `
 
-// Query para estadísticas financieras
-export const GET_ESTADISTICAS_FINANCIERAS = `
-  query EstadisticasFinancieras($year: Int) {
-    estadisticasFinancieras(year: $year) {
-      totalIngresos
-      totalGastos
-      saldo
-      cuotasPendientes
-      cuotasCobradas
-      donaciones
-      porMes {
-        mes
-        ingresos
-        gastos
-      }
-    }
-  }
-`
-
-// Query para obtener remesas SEPA
-export const GET_REMESAS_SEPA = `
-  query RemesasSEPA($filters: RemesaFilters) {
-    remesasSEPA(filters: $filters) {
+// Query para obtener órdenes de cobro
+export const GET_ORDENES_COBRO = `
+  query OrdenesCobro($limit: Int, $offset: Int) {
+    ordenesCobro(limit: $limit, offset: $offset) {
       id
-      fecha_creacion
-      fecha_cobro
-      total_recibos
-      importe_total
-      estado
-      fichero_xml
+      importe
+      fechaProcesamiento
+      remesa {
+        id
+        referencia
+      }
+      cuota {
+        id
+        ejercicio
+        miembro {
+          id
+          nombre
+          apellido1
+        }
+      }
+      estado {
+        id
+        nombre
+      }
+    }
+  }
+`
+
+// Query para importes de cuota por año
+export const GET_IMPORTES_CUOTA = `
+  query ImportesCuotaAnio {
+    importesCuotaAnio {
+      id
+      ejercicio
+      importe
+      nombreCuota
+      observaciones
+      tipoMiembro {
+        id
+        nombre
+      }
+      activo
+    }
+  }
+`
+
+// Query para estados financieros (catálogos)
+export const GET_ESTADOS_CUOTA = `
+  query EstadosCuota {
+    estadosCuota {
+      id
+      nombre
+      descripcion
+      color
+      orden
+      activo
+    }
+  }
+`
+
+export const GET_ESTADOS_DONACION = `
+  query EstadosDonacion {
+    estadosDonacion {
+      id
+      nombre
+      descripcion
+      activo
+    }
+  }
+`
+
+export const GET_ESTADOS_REMESA = `
+  query EstadosRemesa {
+    estadosRemesa {
+      id
+      nombre
+      descripcion
+      activo
+    }
+  }
+`
+
+export const GET_ESTADOS_ORDEN_COBRO = `
+  query EstadosOrdenCobro {
+    estadosOrdenCobro {
+      id
+      nombre
+      descripcion
+      activo
     }
   }
 `

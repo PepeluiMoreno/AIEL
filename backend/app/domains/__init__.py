@@ -21,6 +21,7 @@ from .core.models import (
     EstadoOrdenCobro,
     EstadoRemesa,
     EstadoDonacion,
+    EstadoNotificacion,
     HistorialEstado,
     # Seguridad
     Sesion,
@@ -70,6 +71,8 @@ from .colaboraciones.models import (
 # Miembros domain
 from .miembros.models import (
     TipoMiembro,
+    EstadoMiembro,
+    MotivoBaja,
     Miembro,
 )
 
@@ -146,6 +149,7 @@ __all__ = [
     'EstadoOrdenCobro',
     'EstadoRemesa',
     'EstadoDonacion',
+    'EstadoNotificacion',
     'HistorialEstado',
     # Core - Seguridad
     'Sesion',
@@ -180,6 +184,8 @@ __all__ = [
     'EstadoConvenio',
     # Miembros
     'TipoMiembro',
+    'EstadoMiembro',
+    'MotivoBaja',
     'Miembro',
     # Campañas
     'TipoCampania',

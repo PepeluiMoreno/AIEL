@@ -63,7 +63,7 @@ class Notificacion(BaseModel):
 
     # Canal y estado
     canal: Mapped[str] = mapped_column(String(20), nullable=False, index=True)  # EMAIL, SMS, PUSH, INAPP
-    estado: Mapped[str] = mapped_column(String(20), default='PENDIENTE', nullable=False, index=True)  # PENDIENTE, ENVIADA, LEIDA, ERROR
+    estado_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey('estados_notificacion.id'), nullable=False, index=True)
 
     # Timestamps
     fecha_creacion: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False, index=True)
@@ -91,9 +91,10 @@ class Notificacion(BaseModel):
     # Relaciones
     tipo = relationship('TipoNotificacion', back_populates='notificaciones', lazy='selectin')
     usuario = relationship('Usuario', foreign_keys=[usuario_id], lazy='selectin')
+    estado = relationship('EstadoNotificacion', foreign_keys=[estado_id], lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<Notificacion(titulo='{self.titulo}', usuario_id='{self.usuario_id}', estado='{self.estado}')>"
+        return f"<Notificacion(titulo='{self.titulo}', usuario_id='{self.usuario_id}', estado_id='{self.estado_id}')>"
 
     def marcar_como_leida(self) -> None:
         """Marca la notificación como leída."""

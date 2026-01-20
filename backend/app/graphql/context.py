@@ -1,6 +1,5 @@
 """Contexto GraphQL con sesión de base de datos."""
 
-from typing import AsyncIterator
 from dataclasses import dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,11 +14,13 @@ class Context(BaseContext):
     session: AsyncSession
 
 
-async def get_context() -> AsyncIterator[Context]:
+async def get_context() -> Context:
     """
     Obtiene el contexto GraphQL con una sesión de base de datos.
 
-    La sesión se cierra automáticamente al finalizar la request.
+    Nota: La sesión se crea para cada request GraphQL.
+    El contexto de Strawberry maneja el ciclo de vida.
     """
-    async with async_session() as session:
-        yield Context(session=session)
+    # async_session() es un async_sessionmaker, llamarlo crea una sesión
+    session = async_session()
+    return Context(session=session)

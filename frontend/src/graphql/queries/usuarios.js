@@ -1,30 +1,32 @@
-// Query para obtener usuarios con filtros
+// Queries GraphQL para el módulo de usuarios
+// IMPORTANTE: Strawberry usa camelCase automáticamente
+// NO usar campos 'codigo' - solo se identifican por UUID
+
+// Query para obtener usuarios
 export const GET_USUARIOS = `
-  query Usuarios($filters: UsuarioFilters) {
-    usuarios(filters: $filters) {
+  query Usuarios {
+    usuarios {
       id
       nombre
       email
-      roles
       activo
-      ultimo_acceso
-      created_at
+      ultimoAcceso
+      fechaCreacion
     }
   }
 `
 
 // Query para obtener un usuario por ID
 export const GET_USUARIO_BY_ID = `
-  query Usuario($id: Int!) {
-    usuario(id: $id) {
+  query Usuario($id: UUID!) {
+    usuarios(filter: {id: {eq: $id}}) {
       id
       nombre
       email
-      roles
       activo
-      ultimo_acceso
-      created_at
-      updated_at
+      ultimoAcceso
+      fechaCreacion
+      fechaModificacion
       miembro {
         id
         nombre
@@ -34,31 +36,15 @@ export const GET_USUARIO_BY_ID = `
   }
 `
 
-// Query para estadísticas de usuarios
-export const GET_ESTADISTICAS_USUARIOS = `
-  query EstadisticasUsuarios {
-    estadisticasUsuarios {
-      total
-      activos
-      inactivos
-      porRol {
-        rol
-        cantidad
-      }
-      activosHoy
-    }
-  }
-`
-
-// Query para obtener roles disponibles
-export const GET_ROLES = `
-  query Roles {
-    roles {
+// Query para obtener roles de usuario
+export const GET_USUARIO_ROLES = `
+  query UsuarioRoles {
+    usuarioRoles {
       id
       nombre
-      codigo
       descripcion
       permisos
+      activo
     }
   }
 `

@@ -1,28 +1,40 @@
-// Query para obtener miembros con filtros
+// Queries GraphQL para el módulo de miembros
+// IMPORTANTE: Strawberry convierte nombres a camelCase automáticamente
+// NO usar campos 'codigo' - solo se identifican por UUID
+
+// Query para obtener miembros con paginación
 export const GET_MIEMBROS = `
-  query Miembros($filters: MiembroFilters) {
-    miembros(filters: $filters) {
+  query Miembros($limit: Int, $offset: Int) {
+    miembros(limit: $limit, offset: $offset) {
       id
       nombre
       apellido1
       apellido2
+      sexo
       email
       telefono
-      tipo_persona
-      tipo_membresia
-      tipo_miembro {
+      telefono2
+      fechaNacimiento
+      tipoMiembro {
         id
         nombre
-        codigo
+        requiereCuota
+      }
+      estado {
+        id
+        nombre
+        color
       }
       agrupacion {
         id
-        codigo
         nombre
-        es_nacional
+        tipo
       }
-      fecha_alta
-      fecha_baja
+      fechaAlta
+      fechaBaja
+      activo
+      esVoluntario
+      datosAnonimizados
     }
   }
 `
@@ -30,61 +42,68 @@ export const GET_MIEMBROS = `
 // Query para obtener un miembro por ID
 export const GET_MIEMBRO_BY_ID = `
   query Miembro($id: UUID!) {
-    miembro(id: $id) {
+    miembros(filter: {id: {eq: $id}}) {
       id
       nombre
       apellido1
       apellido2
+      sexo
+      fechaNacimiento
       email
       telefono
-      tipo_persona
-      tipo_membresia
-      tipo_documento
-      numero_documento
-      tipo_miembro {
+      telefono2
+      tipoDocumento
+      numeroDocumento
+      tipoMiembro {
         id
         nombre
-        codigo
+        requiereCuota
+        puedeVotar
       }
+      estado {
+        id
+        nombre
+        color
+      }
+      motivoBajaRel {
+        id
+        nombre
+      }
+      motivoBajaTexto
       agrupacion {
         id
-        codigo
         nombre
-        es_nacional
+        tipo
       }
-      fecha_alta
-      fecha_baja
+      fechaAlta
+      fechaBaja
       direccion
-      codigo_postal
+      codigoPostal
       localidad
       provincia {
+        id
         nombre
       }
-      pais_domicilio {
+      paisDomicilio {
+        id
         nombre
       }
       iban
-      es_voluntario
+      esVoluntario
       disponibilidad
-    }
-  }
-`
-
-// Query para estadísticas de miembros
-export const GET_ESTADISTICAS_MIEMBROS = `
-  query EstadisticasMiembros {
-    estadisticasMiembros {
-      total
-      activos
-      inactivos
-      porTipo {
-        tipo
-        cantidad
-      }
-      porAgrupacion {
-        agrupacion
-        cantidad
-      }
+      horasDisponiblesSemana
+      profesion
+      nivelEstudios
+      intereses
+      observaciones
+      solicitaSupresionDatos
+      fechaSolicitudSupresion
+      fechaLimiteRetencion
+      datosAnonimizados
+      fechaAnonimizacion
+      activo
+      fechaCreacion
+      fechaModificacion
     }
   }
 `
@@ -95,8 +114,36 @@ export const GET_TIPOS_MIEMBRO = `
     tiposMiembro {
       id
       nombre
-      codigo
-      requiere_cuota
+      descripcion
+      requiereCuota
+      puedeVotar
+      activo
+    }
+  }
+`
+
+// Query para obtener estados de miembro
+export const GET_ESTADOS_MIEMBRO = `
+  query EstadosMiembro {
+    estadosMiembro {
+      id
+      nombre
+      descripcion
+      color
+      orden
+      activo
+    }
+  }
+`
+
+// Query para obtener motivos de baja
+export const GET_MOTIVOS_BAJA = `
+  query MotivosBaja {
+    motivosBaja {
+      id
+      nombre
+      descripcion
+      requiereDocumentacion
       activo
     }
   }
@@ -105,14 +152,26 @@ export const GET_TIPOS_MIEMBRO = `
 // Query para obtener agrupaciones territoriales
 export const GET_AGRUPACIONES = `
   query Agrupaciones {
-    agrupaciones {
+    agrupacionesTerritoriales {
       id
-      codigo
       nombre
-      es_nacional
+      nombreCorto
+      tipo
+      nivel
       telefono
       email
+      web
       activo
+      agrupacionPadreId
+    }
+  }
+`
+
+// Query para contar miembros (estadísticas básicas)
+export const GET_MIEMBROS_COUNT = `
+  query MiembrosCount {
+    miembros {
+      id
     }
   }
 `

@@ -1,19 +1,21 @@
-// Query para obtener grupos de trabajo con filtros
+// Queries GraphQL para el módulo de grupos de trabajo
+// IMPORTANTE: Strawberry usa camelCase automáticamente
+// NO usar campos 'codigo' - solo se identifican por UUID
+
+// Query para obtener grupos de trabajo
 export const GET_GRUPOS = `
-  query GruposTrabajo($filters: GrupoTrabajoFilters) {
-    gruposTrabajo(filters: $filters) {
+  query GruposTrabajo {
+    gruposTrabajo {
       id
       nombre
       descripcion
-      tipo
-      activo
-      fecha_creacion
-      coordinador {
+      tipo {
         id
         nombre
-        apellido1
       }
-      miembros {
+      activo
+      fechaCreacion
+      coordinador {
         id
         nombre
         apellido1
@@ -24,14 +26,17 @@ export const GET_GRUPOS = `
 
 // Query para obtener un grupo por ID
 export const GET_GRUPO_BY_ID = `
-  query GrupoTrabajo($id: Int!) {
-    grupoTrabajo(id: $id) {
+  query GrupoTrabajo($id: UUID!) {
+    gruposTrabajo(filter: {id: {eq: $id}}) {
       id
       nombre
       descripcion
-      tipo
+      tipo {
+        id
+        nombre
+      }
       activo
-      fecha_creacion
+      fechaCreacion
       coordinador {
         id
         nombre
@@ -40,10 +45,16 @@ export const GET_GRUPO_BY_ID = `
       }
       miembros {
         id
-        nombre
-        apellido1
-        email
-        rol_en_grupo
+        miembro {
+          id
+          nombre
+          apellido1
+          email
+        }
+        rol {
+          id
+          nombre
+        }
       }
       reuniones {
         id
@@ -55,15 +66,26 @@ export const GET_GRUPO_BY_ID = `
   }
 `
 
-// Query para estadísticas de grupos
-export const GET_ESTADISTICAS_GRUPOS = `
-  query EstadisticasGrupos {
-    estadisticasGrupos {
-      total
-      activos
-      permanentes
-      temporales
-      totalMiembros
+// Query para tipos de grupo
+export const GET_TIPOS_GRUPO = `
+  query TiposGrupo {
+    tiposGrupo {
+      id
+      nombre
+      descripcion
+      activo
+    }
+  }
+`
+
+// Query para roles de grupo
+export const GET_ROLES_GRUPO = `
+  query RolesGrupo {
+    rolesGrupo {
+      id
+      nombre
+      descripcion
+      activo
     }
   }
 `

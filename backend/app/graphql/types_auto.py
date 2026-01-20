@@ -8,6 +8,7 @@ Strawchemy genera automáticamente:
 - CRUD completo
 """
 
+from typing import Optional
 import strawberry
 from . import strawchemy
 
@@ -35,6 +36,7 @@ from ..domains.core.models import (
     EstadoOrdenCobro,
     EstadoRemesa,
     EstadoDonacion,
+    EstadoNotificacion,
     HistorialEstado,
     Sesion,
     HistorialSeguridad,
@@ -72,6 +74,10 @@ class EstadoRemesaType:
 
 @strawchemy.type(EstadoDonacion, include="all", override=True)
 class EstadoDonacionType:
+    pass
+
+@strawchemy.type(EstadoNotificacion, include="all", override=True)
+class EstadoNotificacionType:
     pass
 
 @strawchemy.type(Sesion, include="all", override=True)
@@ -220,20 +226,43 @@ class ConvenioType:
 
 
 # === MIEMBROS ===
-from ..domains.miembros.models import TipoMiembro, Miembro
+from ..domains.miembros.models import TipoMiembro, Miembro, EstadoMiembro, MotivoBaja, TipoCargo, MiembroSegmentacion
 
 @strawchemy.type(TipoMiembro, include="all", override=True)
 class TipoMiembroType:
     pass
 
+@strawchemy.type(EstadoMiembro, include="all", override=True)
+class EstadoMiembroType:
+    pass
+
+@strawchemy.type(MotivoBaja, include="all", override=True)
+class MotivoBajaType:
+    pass
+
+@strawchemy.type(TipoCargo, include="all", override=True)
+class TipoCargoType:
+    pass
+
 @strawchemy.type(Miembro, include="all", override=True)
 class MiembroType:
+    # Hacer nullable las relaciones opcionales que Strawchemy infiere como no-nullable
+    agrupacion: Optional['AgrupacionTerritorialType'] = None
+    provincia: Optional['ProvinciaType'] = None
+    pais_documento: Optional['PaisType'] = None
+    pais_domicilio: Optional['PaisType'] = None
+    motivo_baja_rel: Optional['MotivoBajaType'] = None
+    cargo: Optional['TipoCargoType'] = None
+
+@strawchemy.type(MiembroSegmentacion, include="all", override=True)
+class MiembroSegmentacionType:
+    """Vista materializada para segmentación de miembros en campañas."""
     pass
 
 
 # === CAMPAÑAS ===
 from ..domains.campanas.models import (
-    TipoCampania, Campania, RolParticipante, ParticipanteCampania
+    TipoCampania, Campania, RolParticipante, ParticipanteCampania, Firmante, FirmaCampania
 )
 
 @strawchemy.type(TipoCampania, include="all", override=True)
@@ -250,6 +279,14 @@ class RolParticipanteType:
 
 @strawchemy.type(ParticipanteCampania, include="all", override=True)
 class ParticipanteCampaniaType:
+    pass
+
+@strawchemy.type(Firmante, include="all", override=True)
+class FirmanteType:
+    pass
+
+@strawchemy.type(FirmaCampania, include="all", override=True)
+class FirmaCampaniaType:
     pass
 
 

@@ -5,6 +5,6 @@
 </template>
 
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue'
+import AppLayout from '@/components/common/AppLayout.vue'
 import GrupoDetail from '@/components/grupos/GrupoDetail.vue'
 </script>

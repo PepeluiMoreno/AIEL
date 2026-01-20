@@ -14,7 +14,6 @@ Este script debe ejecutarse DESPUÉS de importar miembros e importes de cuota.
 """
 import asyncio
 import uuid
-import pymysql
 from decimal import Decimal
 from typing import Optional
 from datetime import date, datetime
@@ -26,22 +25,18 @@ from app.core.database import get_database_url
 from app.domains.financiero.models.cuotas import CuotaAnual, ImporteCuotaAnio, ModoIngreso
 from app.domains.core.models.estados import EstadoCuota
 from app.domains.miembros.models.miembro import Miembro
+from app.scripts.importacion.sql_dump_parser import SQLDumpParser
 
 
-# Configuración de conexión MySQL (ajustar según necesidad)
-MYSQL_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',  # Ajustar
-    'database': 'europalaica_com',
-    'charset': 'utf8mb4'
-}
+# Ruta al archivo dump SQL
+DUMP_FILE_PATH = r"C:\Users\Jose\dev\SIGA\data\europalaica_com_2026_01_01 apertura de año.sql"
 
 
 class MapeadorCuotasAnuales:
     """Mapea cuotas anuales de MySQL a PostgreSQL."""
 
-    def __init__(self):
+    def __init__(self, parser: SQLDumpParser):
+        self.parser = parser
         self.estados: dict[str, uuid.UUID] = {}
         self.cache_miembros: dict[int, uuid.UUID] = {}
         self.cache_agrupaciones: dict[str, uuid.UUID] = {}
@@ -204,35 +199,40 @@ class MapeadorCuotasAnuales:
 
         return None
 
-    async def importar_cuotas_anuales(self, session: AsyncSession, mysql_conn):
+    async def importar_cuotas_anuales(self, session: AsyncSession):
         """Importa la tabla CUOTAANIOSOCIO."""
 
         print("\nImportando cuotas anuales...")
-
-        cursor = mysql_conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("""
-            SELECT
-                CODUSER,
-                ANIO,
-                CODAGRUPACION,
-                IMPORTE,
-                IMPORTEPAGADO,
-                GASTOSGESTION,
-                MODOINGRESO,
-                FECHAPAGO,
-                FECHAVENCIMIENTO,
-                OBSERVACIONES
-            FROM CUOTAANIOSOCIO
-            ORDER BY CODUSER, ANIO
-        """)
 
         importadas = 0
         omitidas_sin_miembro = 0
         omitidas_sin_agrupacion = 0
 
-        for row in cursor:
-            coduser = row['CODUSER']
-            ejercicio = row['ANIO']
+        # Estructura de CUOTAANIOSOCIO según el dump:
+        # 0: ANIOCUOTA
+        # 1: CODSOCIO
+        # 2: CODCUOTA
+        # 3: CODAGRUPACION
+        # 4: IMPORTECUOTAANIOEL
+        # 5: NOMBRECUOTA
+        # 6: IMPORTECUOTAANIOSOCIO
+        # 7: IMPORTECUOTAANIOPAGADA
+        # 8: IMPORTEGASTOSABONOCUOTA
+        # 9: FECHAPAGO
+        # 10: FECHAANOTACION
+        # 11: MODOINGRESO
+        # 12: CUENTAPAGO
+        # 13: ESTADOCUOTA
+        # 14: ORDENARCOBROBANCO
+        # 15: OBSERVACIONES
+        # 16: NOMARCHIVOSEPAXML
+
+        for row in self.parser.extraer_inserts('CUOTAANIOSOCIO'):
+            if len(row) < 17:
+                continue
+
+            ejercicio = row[0]  # ANIOCUOTA
+            coduser = row[1]  # CODSOCIO
 
             # Obtener UUID del miembro
             miembro_id = await self.obtener_uuid_miembro(session, coduser)
@@ -252,7 +252,7 @@ class MapeadorCuotasAnuales:
                 continue
 
             # Obtener UUID de agrupación
-            codigo_agrupacion = row['CODAGRUPACION'].strip() if row['CODAGRUPACION'] else None
+            codigo_agrupacion = str(row[3]).strip() if row[3] else None
             agrupacion_id = await self.obtener_uuid_agrupacion(session, codigo_agrupacion)
 
             if not agrupacion_id:
@@ -271,20 +271,21 @@ class MapeadorCuotasAnuales:
             )
 
             # Procesar importes
-            importe = Decimal(str(row['IMPORTE'])) if row['IMPORTE'] else Decimal('0.00')
-            importe_pagado = Decimal(str(row['IMPORTEPAGADO'])) if row['IMPORTEPAGADO'] else Decimal('0.00')
-            gastos_gestion = Decimal(str(row['GASTOSGESTION'])) if row['GASTOSGESTION'] else Decimal('0.00')
+            importe = Decimal(str(row[6])) if row[6] else Decimal('0.00')
+            importe_pagado = Decimal(str(row[7])) if row[7] else Decimal('0.00')
+            gastos_gestion = Decimal(str(row[8])) if row[8] else Decimal('0.00')
 
             # Procesar fechas
-            fecha_pago = self.convertir_fecha(row['FECHAPAGO'])
-            fecha_vencimiento = self.convertir_fecha(row['FECHAVENCIMIENTO'])
+            fecha_pago = self.convertir_fecha(row[9])
+            # No hay fecha_vencimiento en la tabla, usar None
+            fecha_vencimiento = None
 
             # Calcular estado
             codigo_estado = self.calcular_estado_cuota(importe, importe_pagado, fecha_vencimiento)
             estado_id = self.estados.get(codigo_estado, self.estados.get('PENDIENTE'))
 
             # Mapear modo de ingreso
-            modo_ingreso = self.mapear_modo_ingreso(row['MODOINGRESO'])
+            modo_ingreso = self.mapear_modo_ingreso(str(row[11]) if row[11] else None)
 
             # Crear cuota anual
             cuota = CuotaAnual(
@@ -299,7 +300,7 @@ class MapeadorCuotasAnuales:
                 modo_ingreso=modo_ingreso,
                 fecha_pago=fecha_pago,
                 fecha_vencimiento=fecha_vencimiento,
-                observaciones=row['OBSERVACIONES'].strip() if row['OBSERVACIONES'] else None
+                observaciones=str(row[15]).strip() if row[15] else None
             )
 
             session.add(cuota)
@@ -308,8 +309,6 @@ class MapeadorCuotasAnuales:
             if importadas % 500 == 0:
                 print(f"  Procesadas {importadas} cuotas...")
                 await session.flush()  # Flush periódico para grandes volúmenes
-
-        cursor.close()
 
         await session.flush()
 
@@ -327,14 +326,14 @@ async def main():
     print("IMPORTACIÓN DE CUOTAS ANUALES")
     print("="*80 + "\n")
 
-    # Conectar a MySQL
-    print("Conectando a MySQL...")
+    # Crear parser del dump SQL
+    print("Cargando dump SQL...")
     try:
-        mysql_conn = pymysql.connect(**MYSQL_CONFIG)
-        print("  ✓ Conexión MySQL establecida")
-    except Exception as e:
-        print(f"  ✗ Error conectando a MySQL: {e}")
-        print("\n  Ajusta MYSQL_CONFIG en el script con las credenciales correctas.")
+        parser = SQLDumpParser(DUMP_FILE_PATH)
+        print(f"  ✓ Dump cargado: {DUMP_FILE_PATH}")
+    except FileNotFoundError as e:
+        print(f"  ✗ Error: Archivo dump no encontrado: {e}")
+        print("\n  Ajusta DUMP_FILE_PATH en el script con la ruta correcta.")
         return
 
     # Conectar a PostgreSQL
@@ -345,13 +344,13 @@ async def main():
 
     async with async_session() as session:
         try:
-            mapeador = MapeadorCuotasAnuales()
+            mapeador = MapeadorCuotasAnuales(parser)
 
             # Cargar estados de cuota
             await mapeador.cargar_estados_cuota(session)
 
             # Importar cuotas anuales
-            await mapeador.importar_cuotas_anuales(session, mysql_conn)
+            await mapeador.importar_cuotas_anuales(session)
 
             # Commit
             await session.commit()
@@ -367,7 +366,6 @@ async def main():
             traceback.print_exc()
             raise
         finally:
-            mysql_conn.close()
             await engine.dispose()
 
 

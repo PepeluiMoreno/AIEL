@@ -11,143 +11,119 @@ import strawberry
 
 from . import strawchemy
 from .types_auto import *  # Importar todos los tipos generados
-
-from ..domains.usuarios.models import Usuario, UsuarioRol
-from ..domains.core.models import (
-    Configuracion, ReglaValidacionConfig, HistorialConfiguracion,
-    EstadoCuota, EstadoCampania, EstadoTarea,
-    EstadoParticipante, EstadoOrdenCobro, EstadoRemesa, EstadoDonacion,
-    HistorialEstado, Sesion, HistorialSeguridad, IPBloqueada, IntentoAcceso
-)
-from ..domains.geografico.models import Pais, Provincia, Municipio, Direccion, AgrupacionTerritorial
-from ..domains.notificaciones.models import TipoNotificacion, Notificacion, PreferenciaNotificacion
-from ..domains.financiero.models import (
-    ImporteCuotaAnio, CuotaAnual, DonacionConcepto, Donacion,
-    Remesa, OrdenCobro, EstadoPlanificacion, CategoriaPartida,
-    PartidaPresupuestaria, PlanificacionAnual
-)
-from ..domains.colaboraciones.models import Asociacion, TipoAsociacion, Convenio, EstadoConvenio
-from ..domains.miembros.models import TipoMiembro, Miembro
-from ..domains.campanas.models import (
-    TipoCampania, Campania, RolParticipante, ParticipanteCampania
-)
-from ..domains.actividades.models import (
-    TipoActividad, EstadoActividad, EstadoPropuesta, TipoRecurso, TipoKPI,
-    PropuestaActividad, TareaPropuesta, RecursoPropuesta, GrupoPropuesta,
-    Actividad, TareaActividad, RecursoActividad, GrupoActividad, ParticipanteActividad,
-    KPI, KPIActividad, MedicionKPI
-)
-from ..domains.grupos.models import (
-    TipoGrupo, RolGrupo, GrupoTrabajo, MiembroGrupo, TareaGrupo, ReunionGrupo, AsistenteReunion
-)
-from ..domains.voluntariado.models import (
-    CategoriaCompetencia, Competencia, NivelCompetencia, MiembroCompetencia,
-    TipoDocumentoVoluntario, DocumentoMiembro, TipoFormacion, FormacionMiembro
-)
+from .inputs_auto import *  # Importar inputs y filtros
 
 
 @strawberry.type
 class Query:
-    """Queries GraphQL del sistema AIEL con generación automática."""
+    """Queries GraphQL del sistema SIGA con generación automática.
+
+    IMPORTANTE: Todos los nombres usan camelCase para consistencia con GraphQL.
+    Strawberry convierte automáticamente los campos de los tipos a camelCase.
+    """
 
     # === USUARIOS ===
-    usuarios: list[UsuarioType] = strawchemy.field(lambda: Usuario)
-    usuario_roles: list[UsuarioRolType] = strawchemy.field(lambda: UsuarioRol)
+    usuarios: list[UsuarioType] = strawchemy.field()
+    usuarioRoles: list[UsuarioRolType] = strawchemy.field()
 
     # === CORE ===
-    configuraciones: list[ConfiguracionType] = strawchemy.field(lambda: Configuracion)
-    reglas_validacion_config: list[ReglaValidacionConfigType] = strawchemy.field(lambda: ReglaValidacionConfig)
-    historial_configuracion: list[HistorialConfiguracionType] = strawchemy.field(lambda: HistorialConfiguracion)
-    estados_cuota: list[EstadoCuotaType] = strawchemy.field(lambda: EstadoCuota)
-    estados_campania: list[EstadoCampaniaType] = strawchemy.field(lambda: EstadoCampania)
-    estados_tarea: list[EstadoTareaType] = strawchemy.field(lambda: EstadoTarea)
-    estados_participante: list[EstadoParticipanteType] = strawchemy.field(lambda: EstadoParticipante)
-    estados_orden_cobro: list[EstadoOrdenCobroType] = strawchemy.field(lambda: EstadoOrdenCobro)
-    estados_remesa: list[EstadoRemesaType] = strawchemy.field(lambda: EstadoRemesa)
-    estados_donacion: list[EstadoDonacionType] = strawchemy.field(lambda: EstadoDonacion)
-    historial_estado: list[HistorialEstadoType] = strawchemy.field(lambda: HistorialEstado)
-    sesiones: list[SesionType] = strawchemy.field(lambda: Sesion)
-    historial_seguridad: list[HistorialSeguridadType] = strawchemy.field(lambda: HistorialSeguridad)
-    ips_bloqueadas: list[IPBloqueadaType] = strawchemy.field(lambda: IPBloqueada)
-    intentos_acceso: list[IntentoAccesoType] = strawchemy.field(lambda: IntentoAcceso)
+    configuraciones: list[ConfiguracionType] = strawchemy.field()
+    reglasValidacionConfig: list[ReglaValidacionConfigType] = strawchemy.field()
+    historialConfiguracion: list[HistorialConfiguracionType] = strawchemy.field()
+    estadosCuota: list[EstadoCuotaType] = strawchemy.field()
+    estadosCampania: list[EstadoCampaniaType] = strawchemy.field()
+    estadosTarea: list[EstadoTareaType] = strawchemy.field()
+    estadosParticipante: list[EstadoParticipanteType] = strawchemy.field()
+    estadosOrdenCobro: list[EstadoOrdenCobroType] = strawchemy.field()
+    estadosRemesa: list[EstadoRemesaType] = strawchemy.field()
+    estadosDonacion: list[EstadoDonacionType] = strawchemy.field()
+    estadosNotificacion: list[EstadoNotificacionType] = strawchemy.field()
+    historialEstado: list[HistorialEstadoType] = strawchemy.field()
+    sesiones: list[SesionType] = strawchemy.field()
+    historialSeguridad: list[HistorialSeguridadType] = strawchemy.field()
+    ipsBloqueadas: list[IPBloqueadaType] = strawchemy.field()
+    intentosAcceso: list[IntentoAccesoType] = strawchemy.field()
 
     # === GEOGRÁFICO ===
-    paises: list[PaisType] = strawchemy.field(lambda: Pais)
-    provincias: list[ProvinciaType] = strawchemy.field(lambda: Provincia)
-    municipios: list[MunicipioType] = strawchemy.field(lambda: Municipio)
-    direcciones: list[DireccionType] = strawchemy.field(lambda: Direccion)
-    agrupaciones_territoriales: list[AgrupacionTerritorialType] = strawchemy.field(lambda: AgrupacionTerritorial)
+    paises: list[PaisType] = strawchemy.field()
+    provincias: list[ProvinciaType] = strawchemy.field()
+    municipios: list[MunicipioType] = strawchemy.field()
+    direcciones: list[DireccionType] = strawchemy.field()
+    agrupacionesTerritoriales: list[AgrupacionTerritorialType] = strawchemy.field()
 
     # === NOTIFICACIONES ===
-    tipos_notificacion: list[TipoNotificacionType] = strawchemy.field(lambda: TipoNotificacion)
-    notificaciones: list[NotificacionType] = strawchemy.field(lambda: Notificacion)
-    preferencias_notificacion: list[PreferenciaNotificacionType] = strawchemy.field(lambda: PreferenciaNotificacion)
+    tiposNotificacion: list[TipoNotificacionType] = strawchemy.field()
+    notificaciones: list[NotificacionType] = strawchemy.field()
+    preferenciasNotificacion: list[PreferenciaNotificacionType] = strawchemy.field()
 
     # === FINANCIERO ===
-    importes_cuota_anio: list[ImporteCuotaAnioType] = strawchemy.field(lambda: ImporteCuotaAnio)
-    cuotas_anuales: list[CuotaAnualType] = strawchemy.field(lambda: CuotaAnual)
-    donacion_conceptos: list[DonacionConceptoType] = strawchemy.field(lambda: DonacionConcepto)
-    donaciones: list[DonacionType] = strawchemy.field(lambda: Donacion)
-    remesas: list[RemesaType] = strawchemy.field(lambda: Remesa)
-    ordenes_cobro: list[OrdenCobroType] = strawchemy.field(lambda: OrdenCobro)
-    estados_planificacion: list[EstadoPlanificacionType] = strawchemy.field(lambda: EstadoPlanificacion)
-    categorias_partida: list[CategoriaPartidaType] = strawchemy.field(lambda: CategoriaPartida)
-    partidas_presupuestarias: list[PartidaPresupuestariaType] = strawchemy.field(lambda: PartidaPresupuestaria)
-    planificaciones_anuales: list[PlanificacionAnualType] = strawchemy.field(lambda: PlanificacionAnual)
+    importesCuotaAnio: list[ImporteCuotaAnioType] = strawchemy.field()
+    cuotasAnuales: list[CuotaAnualType] = strawchemy.field()
+    donacionConceptos: list[DonacionConceptoType] = strawchemy.field()
+    donaciones: list[DonacionType] = strawchemy.field()
+    remesas: list[RemesaType] = strawchemy.field()
+    ordenesCobro: list[OrdenCobroType] = strawchemy.field()
+    estadosPlanificacion: list[EstadoPlanificacionType] = strawchemy.field()
+    categoriasPartida: list[CategoriaPartidaType] = strawchemy.field()
+    partidasPresupuestarias: list[PartidaPresupuestariaType] = strawchemy.field()
+    planificacionesAnuales: list[PlanificacionAnualType] = strawchemy.field()
 
     # === COLABORACIONES ===
-    tipos_asociacion: list[TipoAsociacionType] = strawchemy.field(lambda: TipoAsociacion)
-    asociaciones: list[AsociacionType] = strawchemy.field(lambda: Asociacion)
-    estados_convenio: list[EstadoConvenioType] = strawchemy.field(lambda: EstadoConvenio)
-    convenios: list[ConvenioType] = strawchemy.field(lambda: Convenio)
+    tiposAsociacion: list[TipoAsociacionType] = strawchemy.field()
+    asociaciones: list[AsociacionType] = strawchemy.field()
+    estadosConvenio: list[EstadoConvenioType] = strawchemy.field()
+    convenios: list[ConvenioType] = strawchemy.field()
 
     # === MIEMBROS ===
-    tipos_miembro: list[TipoMiembroType] = strawchemy.field(lambda: TipoMiembro)
-    miembros: list[MiembroType] = strawchemy.field(lambda: Miembro)
+    tiposMiembro: list[TipoMiembroType] = strawchemy.field()
+    estadosMiembro: list[EstadoMiembroType] = strawchemy.field()
+    motivosBaja: list[MotivoBajaType] = strawchemy.field()
+    tiposCargo: list[TipoCargoType] = strawchemy.field()
+    miembros: list[MiembroType] = strawchemy.field()
 
     # === CAMPAÑAS ===
-    tipos_campania: list[TipoCampaniaType] = strawchemy.field(lambda: TipoCampania)
-    campanias: list[CampaniaType] = strawchemy.field(lambda: Campania)
-    roles_participante: list[RolParticipanteType] = strawchemy.field(lambda: RolParticipante)
-    participantes_campania: list[ParticipanteCampaniaType] = strawchemy.field(lambda: ParticipanteCampania)
+    tiposCampania: list[TipoCampaniaType] = strawchemy.field(filter_input=TipoCampaniaFilter)
+    campanias: list[CampaniaType] = strawchemy.field(filter_input=CampaniaFilter)
+    rolesParticipante: list[RolParticipanteType] = strawchemy.field()
+    participantesCampania: list[ParticipanteCampaniaType] = strawchemy.field()
 
     # === ACTIVIDADES ===
-    tipos_actividad: list[TipoActividadType] = strawchemy.field(lambda: TipoActividad)
-    estados_actividad: list[EstadoActividadType] = strawchemy.field(lambda: EstadoActividad)
-    estados_propuesta: list[EstadoPropuestaType] = strawchemy.field(lambda: EstadoPropuesta)
-    tipos_recurso: list[TipoRecursoType] = strawchemy.field(lambda: TipoRecurso)
-    tipos_kpi: list[TipoKPIType] = strawchemy.field(lambda: TipoKPI)
-    propuestas_actividad: list[PropuestaActividadType] = strawchemy.field(lambda: PropuestaActividad)
-    tareas_propuesta: list[TareaPropuestaType] = strawchemy.field(lambda: TareaPropuesta)
-    recursos_propuesta: list[RecursoPropuestaType] = strawchemy.field(lambda: RecursoPropuesta)
-    grupos_propuesta: list[GrupoPropuestaType] = strawchemy.field(lambda: GrupoPropuesta)
-    actividades: list[ActividadType] = strawchemy.field(lambda: Actividad)
-    tareas_actividad: list[TareaActividadType] = strawchemy.field(lambda: TareaActividad)
-    recursos_actividad: list[RecursoActividadType] = strawchemy.field(lambda: RecursoActividad)
-    grupos_actividad: list[GrupoActividadType] = strawchemy.field(lambda: GrupoActividad)
-    participantes_actividad: list[ParticipanteActividadType] = strawchemy.field(lambda: ParticipanteActividad)
-    kpis: list[KPIType] = strawchemy.field(lambda: KPI)
-    kpis_actividad: list[KPIActividadType] = strawchemy.field(lambda: KPIActividad)
-    mediciones_kpi: list[MedicionKPIType] = strawchemy.field(lambda: MedicionKPI)
+    tiposActividad: list[TipoActividadType] = strawchemy.field()
+    estadosActividad: list[EstadoActividadType] = strawchemy.field()
+    estadosPropuesta: list[EstadoPropuestaType] = strawchemy.field()
+    tiposRecurso: list[TipoRecursoType] = strawchemy.field()
+    tiposKpi: list[TipoKPIType] = strawchemy.field()
+    propuestasActividad: list[PropuestaActividadType] = strawchemy.field()
+    tareasPropuesta: list[TareaPropuestaType] = strawchemy.field()
+    recursosPropuesta: list[RecursoPropuestaType] = strawchemy.field()
+    gruposPropuesta: list[GrupoPropuestaType] = strawchemy.field()
+    actividades: list[ActividadType] = strawchemy.field()
+    tareasActividad: list[TareaActividadType] = strawchemy.field()
+    recursosActividad: list[RecursoActividadType] = strawchemy.field()
+    gruposActividad: list[GrupoActividadType] = strawchemy.field()
+    participantesActividad: list[ParticipanteActividadType] = strawchemy.field()
+    kpis: list[KPIType] = strawchemy.field()
+    kpisActividad: list[KPIActividadType] = strawchemy.field()
+    medicionesKpi: list[MedicionKPIType] = strawchemy.field()
 
     # === GRUPOS ===
-    tipos_grupo: list[TipoGrupoType] = strawchemy.field(lambda: TipoGrupo)
-    roles_grupo: list[RolGrupoType] = strawchemy.field(lambda: RolGrupo)
-    grupos_trabajo: list[GrupoTrabajoType] = strawchemy.field(lambda: GrupoTrabajo)
-    miembros_grupo: list[MiembroGrupoType] = strawchemy.field(lambda: MiembroGrupo)
-    tareas_grupo: list[TareaGrupoType] = strawchemy.field(lambda: TareaGrupo)
-    reuniones_grupo: list[ReunionGrupoType] = strawchemy.field(lambda: ReunionGrupo)
-    asistentes_reunion: list[AsistenteReunionType] = strawchemy.field(lambda: AsistenteReunion)
+    tiposGrupo: list[TipoGrupoType] = strawchemy.field()
+    rolesGrupo: list[RolGrupoType] = strawchemy.field()
+    gruposTrabajo: list[GrupoTrabajoType] = strawchemy.field()
+    miembrosGrupo: list[MiembroGrupoType] = strawchemy.field()
+    tareasGrupo: list[TareaGrupoType] = strawchemy.field()
+    reunionesGrupo: list[ReunionGrupoType] = strawchemy.field()
+    asistentesReunion: list[AsistenteReunionType] = strawchemy.field()
 
     # === VOLUNTARIADO ===
-    categorias_competencia: list[CategoriaCompetenciaType] = strawchemy.field(lambda: CategoriaCompetencia)
-    competencias: list[CompetenciaType] = strawchemy.field(lambda: Competencia)
-    niveles_competencia: list[NivelCompetenciaType] = strawchemy.field(lambda: NivelCompetencia)
-    miembros_competencia: list[MiembroCompetenciaType] = strawchemy.field(lambda: MiembroCompetencia)
-    tipos_documento_voluntario: list[TipoDocumentoVoluntarioType] = strawchemy.field(lambda: TipoDocumentoVoluntario)
-    documentos_miembro: list[DocumentoMiembroType] = strawchemy.field(lambda: DocumentoMiembro)
-    tipos_formacion: list[TipoFormacionType] = strawchemy.field(lambda: TipoFormacion)
-    formaciones_miembro: list[FormacionMiembroType] = strawchemy.field(lambda: FormacionMiembro)
+    categoriasCompetencia: list[CategoriaCompetenciaType] = strawchemy.field()
+    competencias: list[CompetenciaType] = strawchemy.field()
+    nivelesCompetencia: list[NivelCompetenciaType] = strawchemy.field()
+    miembrosCompetencia: list[MiembroCompetenciaType] = strawchemy.field()
+    tiposDocumentoVoluntario: list[TipoDocumentoVoluntarioType] = strawchemy.field()
+    documentosMiembro: list[DocumentoMiembroType] = strawchemy.field()
+    tiposFormacion: list[TipoFormacionType] = strawchemy.field()
+    formacionesMiembro: list[FormacionMiembroType] = strawchemy.field()
 
 
 # Importar mutations
@@ -155,6 +131,7 @@ from .mutations import Mutation
 
 
 # Schema principal con queries y mutations
+# Strawberry usa camelCase por defecto para campos de tipos
 schema = strawberry.Schema(
     query=Query,
     mutation=Mutation,

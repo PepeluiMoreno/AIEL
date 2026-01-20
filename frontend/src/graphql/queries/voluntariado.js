@@ -1,89 +1,116 @@
-// Query para obtener voluntarios con filtros
+// Queries GraphQL para el módulo de voluntariado
+// IMPORTANTE: Strawberry usa camelCase automáticamente
+// NO usar campos 'codigo' - solo se identifican por UUID
+
+// Query para obtener miembros voluntarios
 export const GET_VOLUNTARIOS = `
-  query Voluntarios($filters: VoluntarioFilters) {
-    voluntarios(filters: $filters) {
+  query Voluntarios {
+    miembros(filter: {esVoluntario: {eq: true}}) {
       id
-      miembro {
-        id
-        nombre
-        apellido1
-        email
-        telefono
-      }
-      habilidades
+      nombre
+      apellido1
+      apellido2
+      email
+      telefono
       disponibilidad
+      horasDisponiblesSemana
+      profesion
+      nivelEstudios
+      intereses
       activo
-      fecha_alta
-      campanias_participadas {
-        id
-        nombre
-      }
+      fechaAlta
     }
   }
 `
 
 // Query para obtener un voluntario por ID
 export const GET_VOLUNTARIO_BY_ID = `
-  query Voluntario($id: Int!) {
-    voluntario(id: $id) {
+  query Voluntario($id: UUID!) {
+    miembros(filter: {id: {eq: $id}}) {
       id
-      miembro {
-        id
-        nombre
-        apellido1
-        apellido2
-        email
-        telefono
-      }
-      habilidades
+      nombre
+      apellido1
+      apellido2
+      email
+      telefono
       disponibilidad
-      notas
+      horasDisponiblesSemana
+      profesion
+      nivelEstudios
+      intereses
+      experienciaVoluntariado
+      observacionesVoluntariado
+      puedeConducir
+      vehiculoPropio
+      disponibilidadViajar
       activo
-      fecha_alta
-      campanias_participadas {
-        id
-        nombre
-        fecha_inicio
-        fecha_fin
-      }
-      historial_participacion {
-        campania_id
-        campania_nombre
-        horas_dedicadas
-        tareas_realizadas
-        valoracion
-      }
+      fechaAlta
     }
   }
 `
 
-// Query para estadísticas de voluntariado
-export const GET_ESTADISTICAS_VOLUNTARIADO = `
-  query EstadisticasVoluntariado {
-    estadisticasVoluntariado {
-      totalVoluntarios
-      activos
-      inactivos
-      horasTotales
-      porHabilidad {
-        habilidad
-        cantidad
-      }
-      porDisponibilidad {
-        disponibilidad
-        cantidad
-      }
-    }
-  }
-`
-
-// Query para obtener habilidades disponibles
-export const GET_HABILIDADES = `
-  query Habilidades {
-    habilidades {
+// Query para categorías de competencia
+export const GET_CATEGORIAS_COMPETENCIA = `
+  query CategoriasCompetencia {
+    categoriasCompetencia {
       id
       nombre
       descripcion
+      activo
+    }
+  }
+`
+
+// Query para competencias
+export const GET_COMPETENCIAS = `
+  query Competencias {
+    competencias {
+      id
+      nombre
+      descripcion
+      categoria {
+        id
+        nombre
+      }
+      activo
+    }
+  }
+`
+
+// Query para niveles de competencia
+export const GET_NIVELES_COMPETENCIA = `
+  query NivelesCompetencia {
+    nivelesCompetencia {
+      id
+      nombre
+      descripcion
+      valor
+      activo
+    }
+  }
+`
+
+// Query para tipos de documento voluntario
+export const GET_TIPOS_DOCUMENTO_VOLUNTARIO = `
+  query TiposDocumentoVoluntario {
+    tiposDocumentoVoluntario {
+      id
+      nombre
+      descripcion
+      requiereValidacion
+      activo
+    }
+  }
+`
+
+// Query para tipos de formación
+export const GET_TIPOS_FORMACION = `
+  query TiposFormacion {
+    tiposFormacion {
+      id
+      nombre
+      descripcion
+      activo
     }
   }
 `

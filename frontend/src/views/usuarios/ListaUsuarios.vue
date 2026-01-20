@@ -1,5 +1,5 @@
 <template>
-  <AppLayout title="Usuarios" subtitle="Gestión de usuarios del sistema AIEL">
+  <AppLayout title="Usuarios" subtitle="Gestión de usuarios del sistema SIGA">
     <!-- Resumen -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <div class="bg-purple-50 rounded-lg shadow p-4 border border-purple-100">
@@ -160,10 +160,10 @@ const usuarios = ref([])
 const searchQuery = ref('')
 
 const resumen = ref({
-  total: 8,
-  activos: 7,
-  admins: 2,
-  activosHoy: 5
+  total: 1,
+  activos: 1,
+  admins: 1,
+  activosHoy: 1
 })
 
 const filters = ref({
@@ -177,88 +177,18 @@ onMounted(() => {
 
 const loadUsuarios = async () => {
   loading.value = true
-  // Datos mock
+  // TODO: Reemplazar por llamada a API GraphQL
   setTimeout(() => {
     usuarios.value = [
       {
         id: 1,
-        nombre: 'María García López',
-        iniciales: 'MG',
-        email: 'maria.garcia@europalaica.org',
-        cargo: 'Coordinadora General',
+        nombre: 'Administrador',
+        iniciales: 'AD',
+        email: 'admin@europalaica.org',
+        cargo: 'Administrador del Sistema',
         rol: 'Admin',
         activo: true,
-        ultimoAcceso: 'Hoy, 10:30'
-      },
-      {
-        id: 2,
-        nombre: 'Juan Martínez Ruiz',
-        iniciales: 'JM',
-        email: 'juan.martinez@europalaica.org',
-        cargo: 'Responsable Comunicación',
-        rol: 'Gestor',
-        activo: true,
-        ultimoAcceso: 'Hoy, 09:15'
-      },
-      {
-        id: 3,
-        nombre: 'Ana López Fernández',
-        iniciales: 'AL',
-        email: 'ana.lopez@europalaica.org',
-        cargo: 'Tesorera',
-        rol: 'Admin',
-        activo: true,
-        ultimoAcceso: 'Ayer, 18:45'
-      },
-      {
-        id: 4,
-        nombre: 'Carlos Sánchez Vega',
-        iniciales: 'CS',
-        email: 'carlos.sanchez@europalaica.org',
-        cargo: 'Secretario',
-        rol: 'Gestor',
-        activo: true,
-        ultimoAcceso: 'Hoy, 11:20'
-      },
-      {
-        id: 5,
-        nombre: 'Laura Díaz Moreno',
-        iniciales: 'LD',
-        email: 'laura.diaz@europalaica.org',
-        cargo: 'Coordinadora Madrid',
-        rol: 'Gestor',
-        activo: true,
-        ultimoAcceso: 'Hace 2 días'
-      },
-      {
-        id: 6,
-        nombre: 'Pedro Hernández Gil',
-        iniciales: 'PH',
-        email: 'pedro.hernandez@europalaica.org',
-        cargo: 'Voluntario',
-        rol: 'Usuario',
-        activo: true,
-        ultimoAcceso: 'Hoy, 08:00'
-      },
-      {
-        id: 7,
-        nombre: 'Elena Torres Blanco',
-        iniciales: 'ET',
-        email: 'elena.torres@europalaica.org',
-        cargo: 'Coordinadora Barcelona',
-        rol: 'Gestor',
-        activo: false,
-        ultimoAcceso: 'Hace 1 mes'
-      },
-      {
-        id: 8,
-        nombre: 'Roberto Díaz Campos',
-        iniciales: 'RD',
-        email: 'roberto.diaz@europalaica.org',
-        cargo: 'Asesor Jurídico',
-        rol: 'Usuario',
-        activo: true,
-        ultimoAcceso: 'Ayer, 16:30'
+        ultimoAcceso: 'Hoy'
       }
     ]
     loading.value = false

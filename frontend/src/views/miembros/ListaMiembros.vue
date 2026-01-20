@@ -67,8 +67,8 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Agrupación Territorial</label>
             <select v-model="filters.agrupacion" class="w-full border border-gray-300 rounded-lg px-3 py-2">
               <option value="">Todas</option>
-              <option v-for="agrup in agrupaciones" :key="agrup.codigo" :value="agrup.codigo">
-                {{ agrup.nombre }}{{ agrup.es_nacional ? ' (Nacional)' : '' }}
+              <option v-for="agrup in agrupaciones" :key="agrup.id" :value="agrup.id">
+                {{ agrup.nombre }}{{ agrup.tipo === 'NACIONAL' ? ' (Nacional)' : '' }}
               </option>
             </select>
           </div>
