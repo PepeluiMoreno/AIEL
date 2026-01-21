@@ -21,7 +21,6 @@ class MotivoBaja(BaseModel):
     __tablename__ = 'motivos_baja'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 

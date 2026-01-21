@@ -271,7 +271,9 @@ class TipoCampaniaType:
 
 @strawchemy.type(Campania, include="all", override=True)
 class CampaniaType:
-    pass
+    # Hacer nullable las relaciones opcionales que Strawchemy infiere como no-nullable
+    agrupacion: Optional['AgrupacionTerritorialType'] = None
+    responsable: Optional['MiembroType'] = None
 
 @strawchemy.type(RolParticipante, include="all", override=True)
 class RolParticipanteType:

@@ -20,7 +20,6 @@ class RegistroSistemaMixin:
 
     Campos:
     - es_sistema: Boolean que marca si el registro es del sistema
-    - codigo: String único para identificar el registro (requerido)
 
     Los registros del sistema:
     - NO pueden ser eliminados (ni soft delete)
@@ -34,16 +33,6 @@ class RegistroSistemaMixin:
         default=False,
         index=True,
         comment="Indica si es un registro del sistema (no eliminable)"
-    )
-
-    # El código es obligatorio para registros del sistema
-    # para poder identificarlos de forma inequívoca en el código
-    codigo: Mapped[str] = mapped_column(
-        String(50),
-        unique=True,
-        nullable=False,
-        index=True,
-        comment="Código único del registro"
     )
 
     def puede_eliminarse(self) -> bool:
@@ -73,8 +62,7 @@ class RegistroSistemaMixin:
         """
         if self.es_sistema:
             raise ValueError(
-                f"No se puede eliminar el registro '{self.codigo}' "
-                f"porque es un registro del sistema."
+                "No se puede eliminar este registro porque es un registro del sistema."
             )
 
     def validar_desactivacion(self) -> None:
@@ -86,8 +74,7 @@ class RegistroSistemaMixin:
         """
         if self.es_sistema:
             raise ValueError(
-                f"No se puede desactivar el registro '{self.codigo}' "
-                f"porque es un registro del sistema."
+                "No se puede desactivar este registro porque es un registro del sistema."
             )
 
 
@@ -130,4 +117,4 @@ class CatalogoMixin(RegistroSistemaMixin):
     )
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<{self.__class__.__name__}(nombre='{self.nombre}')>"

@@ -21,7 +21,6 @@ class EstadoMiembro(BaseModel):
     __tablename__ = 'estados_miembro'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     color: Mapped[str] = mapped_column(String(7), nullable=False, default='#6C757D')  # Color hex para UI

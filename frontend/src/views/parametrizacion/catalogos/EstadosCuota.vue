@@ -7,22 +7,23 @@
     query-name="estadosCuota"
     :query-string="GET_ESTADOS_CUOTA"
     :mutation-create="CREATE_ESTADO_CUOTA"
+    :mutation-update="UPDATE_ESTADO_CUOTA"
+    :mutation-delete="DELETE_ESTADO_CUOTA"
     :columnas="columnas"
     :campos="campos"
+    order-by="orden"
   />
 </template>
 
 <script setup>
 import CatalogoGenerico from '@/components/parametrizacion/CatalogoGenerico.vue'
-import { GET_ESTADOS_CUOTA, CREATE_ESTADO_CUOTA } from '@/graphql/queries/catalogos.js'
+import { GET_ESTADOS_CUOTA, CREATE_ESTADO_CUOTA, UPDATE_ESTADO_CUOTA, DELETE_ESTADO_CUOTA } from '@/graphql/queries/catalogos.js'
 
 const columnas = [
-  { key: 'nombre', label: 'Nombre' },
-  { key: 'color', label: 'Color', type: 'color' },
   { key: 'orden', label: 'Orden' },
-  { key: 'esInicial', label: 'Inicial', type: 'boolean' },
-  { key: 'esFinal', label: 'Final', type: 'boolean' },
-  { key: 'activo', label: 'Estado' },
+  { key: 'nombre', label: 'Nombre' },
+  { key: 'descripcion', label: 'Descripción', type: 'multiline' },
+  { key: 'activo', label: 'En uso', type: 'checkbox' },
 ]
 
 const campos = [
@@ -30,8 +31,6 @@ const campos = [
   { name: 'descripcion', label: 'Descripción', type: 'textarea' },
   { name: 'color', label: 'Color', type: 'color', default: '#6C757D' },
   { name: 'orden', label: 'Orden', type: 'number', default: 0 },
-  { name: 'esInicial', label: 'Es estado inicial', type: 'checkbox', default: false, description: 'Estado asignado automáticamente al crear una cuota' },
-  { name: 'esFinal', label: 'Es estado final', type: 'checkbox', default: false, description: 'Estado que cierra el ciclo de la cuota' },
-  { name: 'activo', label: 'Activo', type: 'checkbox', default: true },
+  { name: 'activo', label: 'En uso', type: 'checkbox', default: true },
 ]
 </script>

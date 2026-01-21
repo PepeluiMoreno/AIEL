@@ -34,19 +34,9 @@ ESTADOS_CAMPANIA = {
 }
 
 
-async def obtener_o_crear_tipo_campania(session: AsyncSession, codigo: str) -> uuid.UUID:
-    """Obtiene o crea un tipo de campaña."""
-    result = await session.execute(
-        text("SELECT id FROM tipos_campania WHERE codigo = :codigo"),
-        {"codigo": codigo}
-    )
-    row = result.fetchone()
-
-    if row:
-        return row[0]
-
-    # Crear tipo
-    nuevo_id = uuid.uuid4()
+async def obtener_o_crear_tipo_campania(session: AsyncSession, tipo_csv: str) -> uuid.UUID:
+    """Obtiene o crea un tipo de campaña por nombre."""
+    # Mapeo de código CSV a nombre legible
     nombres = {
         "EDUCACION": "Educación",
         "FINANCIACION": "Financiación",
@@ -55,22 +45,44 @@ async def obtener_o_crear_tipo_campania(session: AsyncSession, codigo: str) -> u
         "JUDICIAL": "Judicial",
         "EVENTO": "Evento",
     }
+    nombre = nombres.get(tipo_csv, tipo_csv)
+
+    result = await session.execute(
+        text("SELECT id FROM tipos_campania WHERE nombre = :nombre"),
+        {"nombre": nombre}
+    )
+    row = result.fetchone()
+
+    if row:
+        return row[0]
+
+    # Crear tipo
+    nuevo_id = uuid.uuid4()
     await session.execute(
         text("""
-            INSERT INTO tipos_campania (id, codigo, nombre, activo)
-            VALUES (:id, :codigo, :nombre, true)
+            INSERT INTO tipos_campania (id, nombre, activo)
+            VALUES (:id, :nombre, true)
         """),
-        {"id": nuevo_id, "codigo": codigo, "nombre": nombres.get(codigo, codigo)}
+        {"id": nuevo_id, "nombre": nombre}
     )
-    print(f"  + Tipo campaña creado: {codigo}")
+    print(f"  + Tipo campaña creado: {nombre}")
     return nuevo_id
 
 
-async def obtener_o_crear_estado_campania(session: AsyncSession, codigo: str) -> uuid.UUID:
-    """Obtiene o crea un estado de campaña."""
+async def obtener_o_crear_estado_campania(session: AsyncSession, estado_csv: str) -> uuid.UUID:
+    """Obtiene o crea un estado de campaña por nombre."""
+    # Mapeo de código CSV a nombre legible
+    nombres = {
+        "ACTIVA": "Activa",
+        "FINALIZADA": "Finalizada",
+        "SUSPENDIDA": "Suspendida",
+        "PLANIFICADA": "Planificada",
+    }
+    nombre = nombres.get(estado_csv, estado_csv)
+
     result = await session.execute(
-        text("SELECT id FROM estados_campania WHERE codigo = :codigo"),
-        {"codigo": codigo}
+        text("SELECT id FROM estados_campania WHERE nombre = :nombre"),
+        {"nombre": nombre}
     )
     row = result.fetchone()
 
@@ -79,33 +91,60 @@ async def obtener_o_crear_estado_campania(session: AsyncSession, codigo: str) ->
 
     # Crear estado
     nuevo_id = uuid.uuid4()
-    nombres = {
-        "ACTIVA": "Activa",
-        "FINALIZADA": "Finalizada",
-        "SUSPENDIDA": "Suspendida",
-        "PLANIFICADA": "Planificada",
-    }
     await session.execute(
         text("""
-            INSERT INTO estados_campania (id, codigo, nombre, descripcion, activo, es_estado_final, orden)
-            VALUES (:id, :codigo, :nombre, :descripcion, true, :es_final, :orden)
+            INSERT INTO estados_campania (id, nombre, descripcion, activo, orden)
+            VALUES (:id, :nombre, :descripcion, true, :orden)
         """),
         {
             "id": nuevo_id,
-            "codigo": codigo,
-            "nombre": nombres.get(codigo, codigo),
-            "descripcion": f"Campaña en estado {nombres.get(codigo, codigo).lower()}",
-            "es_final": codigo in ("FINALIZADA", "SUSPENDIDA"),
-            "orden": {"PLANIFICADA": 1, "ACTIVA": 2, "FINALIZADA": 3, "SUSPENDIDA": 4}.get(codigo, 5)
+            "nombre": nombre,
+            "descripcion": f"Campaña en estado {nombre.lower()}",
+            "orden": {"Planificada": 1, "Activa": 2, "Finalizada": 3, "Suspendida": 4}.get(nombre, 5)
         }
     )
-    print(f"  + Estado campaña creado: {codigo}")
+    print(f"  + Estado campaña creado: {nombre}")
     return nuevo_id
+
+
+# UUIDs conocidos
+JOSE_ANTONIO_NAZ_ID = uuid.UUID('d5041b2a-7689-4634-a96a-321f67d94f9c')
+CARGO_PRESIDENTE_ID = uuid.UUID('01c1a556-9a90-4cdf-a2f2-f6c82d797062')
+
+
+async def obtener_responsable_default(session: AsyncSession) -> uuid.UUID:
+    """Obtiene el ID del presidente (José Antonio Naz Álvarez) y le asigna el cargo si no lo tiene."""
+
+    # Asignar cargo de presidente a José Antonio Naz si no lo tiene
+    await session.execute(
+        text("""
+            UPDATE miembros
+            SET cargo_id = :cargo_id
+            WHERE id = :miembro_id AND (cargo_id IS NULL OR cargo_id != :cargo_id)
+        """),
+        {"cargo_id": CARGO_PRESIDENTE_ID, "miembro_id": JOSE_ANTONIO_NAZ_ID}
+    )
+
+    # Verificar que existe
+    result = await session.execute(
+        text("SELECT nombre, apellido1 FROM miembros WHERE id = :id"),
+        {"id": JOSE_ANTONIO_NAZ_ID}
+    )
+    row = result.fetchone()
+    if row:
+        print(f"  Responsable (Presidente): {row[0]} {row[1]}")
+    else:
+        print(f"  [WARN] No se encontró el miembro con ID {JOSE_ANTONIO_NAZ_ID}")
+
+    return JOSE_ANTONIO_NAZ_ID
 
 
 async def cargar_campanias_desde_csv(session: AsyncSession, csv_path: Path) -> int:
     """Carga campañas desde archivo CSV."""
     print(f"\nLeyendo campañas desde {csv_path}...")
+
+    # Obtener responsable por defecto (José Antonio Naz Álvarez)
+    responsable_id = await obtener_responsable_default(session)
 
     campanias_creadas = 0
     campanias_existentes = 0
@@ -114,7 +153,6 @@ async def cargar_campanias_desde_csv(session: AsyncSession, csv_path: Path) -> i
         reader = csv.DictReader(f)
 
         for row in reader:
-            codigo = row['codigo'].strip()
             nombre = row['nombre'].strip()
             lema = row.get('lema', '').strip() or None
             descripcion_corta = row.get('descripcion_corta', '').strip() or None
@@ -122,10 +160,10 @@ async def cargar_campanias_desde_csv(session: AsyncSession, csv_path: Path) -> i
             tipo_codigo = row.get('tipo', 'INSTITUCIONAL').strip()
             estado_codigo = row.get('estado', 'ACTIVA').strip()
 
-            # Verificar si ya existe
+            # Verificar si ya existe por nombre
             result = await session.execute(
-                text("SELECT id FROM campanias WHERE codigo = :codigo"),
-                {"codigo": codigo}
+                text("SELECT id FROM campanias WHERE nombre = :nombre"),
+                {"nombre": nombre}
             )
             if result.fetchone():
                 campanias_existentes += 1
@@ -135,31 +173,31 @@ async def cargar_campanias_desde_csv(session: AsyncSession, csv_path: Path) -> i
             tipo_id = await obtener_o_crear_tipo_campania(session, tipo_codigo)
             estado_id = await obtener_o_crear_estado_campania(session, estado_codigo)
 
-            # Insertar campaña
+            # Insertar campaña con responsable
             campania_id = uuid.uuid4()
             await session.execute(
                 text("""
                     INSERT INTO campanias (
-                        id, codigo, nombre, lema, descripcion_corta, url_externa,
-                        tipo_campania_id, estado_id
+                        id, nombre, lema, descripcion_corta, url_externa,
+                        tipo_campania_id, estado_id, responsable_id
                     ) VALUES (
-                        :id, :codigo, :nombre, :lema, :descripcion_corta, :url_externa,
-                        :tipo_campania_id, :estado_id
+                        :id, :nombre, :lema, :descripcion_corta, :url_externa,
+                        :tipo_campania_id, :estado_id, :responsable_id
                     )
                 """),
                 {
                     "id": campania_id,
-                    "codigo": codigo,
                     "nombre": nombre,
                     "lema": lema,
                     "descripcion_corta": descripcion_corta,
                     "url_externa": url_externa,
                     "tipo_campania_id": tipo_id,
                     "estado_id": estado_id,
+                    "responsable_id": responsable_id,
                 }
             )
             campanias_creadas += 1
-            print(f"  + {codigo}: {nombre}")
+            print(f"  + {nombre}")
 
     return campanias_creadas, campanias_existentes
 

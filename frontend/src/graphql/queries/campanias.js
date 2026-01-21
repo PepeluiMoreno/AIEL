@@ -20,6 +20,12 @@ export const GET_CAMPANIAS = `
         id
         nombre
       }
+      responsable {
+        id
+        nombre
+        apellido1
+        apellido2
+      }
       fechaInicioPlan
       fechaFinPlan
       fechaInicioReal

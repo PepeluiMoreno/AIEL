@@ -21,7 +21,7 @@ from sqlalchemy import text
 
 
 # Ruta al archivo dump SQL
-DUMP_FILE_PATH = r"C:\Users\Jose\dev\AIEL\data\europalaica_com_2026_01_01 apertura de año.sql"
+DUMP_FILE_PATH = r"C:\Users\Jose\dev\SIGA\data\europalaica_com_2026_01_01 apertura de año.sql"
 
 
 class MapeadorGeografico:

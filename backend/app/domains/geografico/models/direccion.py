@@ -190,7 +190,6 @@ class AgrupacionTerritorial(BaseModel):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
 
     # Identificación
-    codigo: Mapped[str] = mapped_column(String(20), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     nombre_corto: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
@@ -245,7 +244,7 @@ class AgrupacionTerritorial(BaseModel):
     )
 
     def __repr__(self) -> str:
-        return f"<AgrupacionTerritorial(codigo='{self.codigo}', nombre='{self.nombre}', tipo='{self.tipo}')>"
+        return f"<AgrupacionTerritorial(nombre='{self.nombre}', tipo='{self.tipo}')>"
 
     @property
     def nombre_completo(self) -> str:

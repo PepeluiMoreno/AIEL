@@ -1,11 +1,12 @@
 // Queries GraphQL para el módulo de miembros
 // IMPORTANTE: Strawberry convierte nombres a camelCase automáticamente
 // NO usar campos 'codigo' - solo se identifican por UUID
+// Strawchemy no usa limit/offset, usa filtros automáticos generados
 
-// Query para obtener miembros con paginación
+// Query para obtener miembros
 export const GET_MIEMBROS = `
-  query Miembros($limit: Int, $offset: Int) {
-    miembros(limit: $limit, offset: $offset) {
+  query Miembros {
+    miembros {
       id
       nombre
       apellido1
@@ -24,6 +25,10 @@ export const GET_MIEMBROS = `
         id
         nombre
         color
+      }
+      motivoBajaRel {
+        id
+        nombre
       }
       agrupacion {
         id
@@ -109,6 +114,7 @@ export const GET_MIEMBRO_BY_ID = `
 `
 
 // Query para obtener tipos de miembro
+// TODO: Añadir 'orden' tras ejecutar migración Alembic
 export const GET_TIPOS_MIEMBRO = `
   query TiposMiembro {
     tiposMiembro {

@@ -32,13 +32,13 @@
         <div class="flex justify-between items-start">
           <div>
             <div class="flex items-center space-x-3">
-              <h2 class="text-2xl font-bold text-gray-900">{{ campania.lema || campania.nombre }}</h2>
+              <h2 class="text-2xl font-bold text-gray-900">{{ campania.nombre }}</h2>
               <span :class="claseEstado" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
                 {{ campania.estado?.nombre || 'Sin estado' }}
               </span>
             </div>
             <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600">
-              <span v-if="campania.lema" class="text-gray-700">{{ campania.nombre }}</span>
+              <span v-if="campania.lema" class="text-gray-700">Lema: "{{ campania.lema }}"</span>
               <span v-if="campania.tipoCampania" class="text-purple-600 bg-purple-100 px-2 py-0.5 rounded">
                 {{ campania.tipoCampania.nombre }}
               </span>
@@ -153,8 +153,8 @@ const actividades = ref([])
 const recursosHumanos = ref([])
 const recursosMateriales = ref([])
 
-const titulo = computed(() => campania.value?.lema || campania.value?.nombre || 'Detalle de Campaña')
-const subtitulo = computed(() => campania.value?.tipoCampania?.nombre || '')
+const titulo = computed(() => '')
+const subtitulo = computed(() => '')
 
 const pestañas = computed(() => [
   { 

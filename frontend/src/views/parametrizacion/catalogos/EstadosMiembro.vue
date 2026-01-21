@@ -1,26 +1,29 @@
 <template>
   <CatalogoGenerico
-    titulo="Estados de Miembro"
-    subtitulo="Estados del ciclo de vida de los miembros"
-    nombre-singular="Estado de Miembro"
+    titulo="Situaciones"
+    subtitulo="Situaciones por las que pasa un socio"
+    nombre-singular="Situación"
     icono="📊"
     query-name="estadosMiembro"
     :query-string="GET_ESTADOS_MIEMBRO"
     :mutation-create="CREATE_ESTADO_MIEMBRO"
+    :mutation-update="UPDATE_ESTADO_MIEMBRO"
+    :mutation-delete="DELETE_ESTADO_MIEMBRO"
     :columnas="columnas"
     :campos="campos"
+    order-by="orden"
   />
 </template>
 
 <script setup>
 import CatalogoGenerico from '@/components/parametrizacion/CatalogoGenerico.vue'
-import { GET_ESTADOS_MIEMBRO, CREATE_ESTADO_MIEMBRO } from '@/graphql/queries/catalogos.js'
+import { GET_ESTADOS_MIEMBRO, CREATE_ESTADO_MIEMBRO, UPDATE_ESTADO_MIEMBRO, DELETE_ESTADO_MIEMBRO } from '@/graphql/queries/catalogos.js'
 
 const columnas = [
-  { key: 'nombre', label: 'Nombre' },
-  { key: 'color', label: 'Color', type: 'color' },
   { key: 'orden', label: 'Orden' },
-  { key: 'activo', label: 'Estado' },
+  { key: 'nombre', label: 'Nombre' },
+  { key: 'descripcion', label: 'Descripción', type: 'multiline' },
+  { key: 'activo', label: 'En uso', type: 'checkbox' },
 ]
 
 const campos = [
@@ -28,6 +31,6 @@ const campos = [
   { name: 'descripcion', label: 'Descripción', type: 'textarea' },
   { name: 'color', label: 'Color', type: 'color', default: '#6C757D' },
   { name: 'orden', label: 'Orden', type: 'number', default: 0 },
-  { name: 'activo', label: 'Activo', type: 'checkbox', default: true },
+  { name: 'activo', label: 'En uso', type: 'checkbox', default: true },
 ]
 </script>

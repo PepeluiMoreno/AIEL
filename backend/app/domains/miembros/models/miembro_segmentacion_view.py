@@ -43,13 +43,13 @@ class MiembroSegmentacion(Base):
     fecha_nacimiento: Mapped[Optional[date]] = mapped_column(Date)
     edad: Mapped[Optional[int]] = mapped_column(Integer)
 
-    # Tipo y estado
-    tipo_miembro_codigo: Mapped[str] = mapped_column(String(50))
-    estado_codigo: Mapped[str] = mapped_column(String(50))
+    # Tipo y estado (por nombre)
+    tipo_miembro_nombre: Mapped[str] = mapped_column(String(100))
+    estado_nombre: Mapped[str] = mapped_column(String(100))
 
     # Agrupación
     agrupacion_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid)
-    agrupacion_codigo: Mapped[Optional[str]] = mapped_column(String(20))
+    agrupacion_nombre: Mapped[Optional[str]] = mapped_column(String(200))
 
     # Campos de segmentación precalculados
     es_joven: Mapped[bool] = mapped_column(Boolean)
@@ -92,11 +92,11 @@ class MiembroSegmentacion(Base):
                 ELSE NULL
             END as edad,
             -- Tipo y estado
-            tm.codigo as tipo_miembro_codigo,
-            em.codigo as estado_codigo,
+            tm.nombre as tipo_miembro_nombre,
+            em.nombre as estado_nombre,
             -- Agrupación
             m.agrupacion_id,
-            a.codigo as agrupacion_codigo,
+            a.nombre as agrupacion_nombre,
             -- Segmentación: es_joven (menores de 30)
             CASE
                 WHEN m.fecha_nacimiento IS NOT NULL
@@ -106,7 +106,7 @@ class MiembroSegmentacion(Base):
             END as es_joven,
             -- Segmentación: es_simpatizante
             CASE
-                WHEN tm.codigo = 'SIMPATIZANTE' THEN true
+                WHEN LOWER(tm.nombre) = 'simpatizante' THEN true
                 ELSE false
             END as es_simpatizante,
             -- Segmentación: es_voluntario_disponible
@@ -139,7 +139,7 @@ class MiembroSegmentacion(Base):
         CREATE INDEX IF NOT EXISTS idx_vista_miembro_seg_es_voluntario
             ON vista_miembros_segmentacion(es_voluntario_disponible) WHERE es_voluntario_disponible = true;
         CREATE INDEX IF NOT EXISTS idx_vista_miembro_seg_estado
-            ON vista_miembros_segmentacion(estado_codigo);
+            ON vista_miembros_segmentacion(estado_nombre);
         CREATE INDEX IF NOT EXISTS idx_vista_miembro_seg_agrupacion
             ON vista_miembros_segmentacion(agrupacion_id);
         CREATE INDEX IF NOT EXISTS idx_vista_miembro_seg_email

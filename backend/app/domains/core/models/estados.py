@@ -15,17 +15,14 @@ class EstadoBase(BaseModel):
     __abstract__ = True
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     orden: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    es_inicial: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    es_final: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
     color: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # Para UI: 'primary', 'success', 'warning', 'danger'
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<{self.__class__.__name__}(nombre='{self.nombre}')>"
 
 
 class EstadoCuota(EstadoBase):

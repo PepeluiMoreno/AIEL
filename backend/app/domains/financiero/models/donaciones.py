@@ -17,7 +17,6 @@ class DonacionConcepto(BaseModel):
     __tablename__ = "donaciones_conceptos"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(20), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(200), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
@@ -26,7 +25,7 @@ class DonacionConcepto(BaseModel):
     donaciones = relationship('Donacion', back_populates='concepto', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<DonacionConcepto(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<DonacionConcepto(nombre='{self.nombre}')>"
 
 
 class Donacion(BaseModel):

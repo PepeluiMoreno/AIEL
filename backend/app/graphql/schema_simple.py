@@ -79,7 +79,7 @@ class Query:
     estadosMiembro: list[EstadoMiembroType] = strawchemy.field()
     motivosBaja: list[MotivoBajaType] = strawchemy.field()
     tiposCargo: list[TipoCargoType] = strawchemy.field()
-    miembros: list[MiembroType] = strawchemy.field()
+    miembros: list[MiembroType] = strawchemy.field(filter_input=MiembroFilter)
 
     # === CAMPAÑAS ===
     tiposCampania: list[TipoCampaniaType] = strawchemy.field(filter_input=TipoCampaniaFilter)

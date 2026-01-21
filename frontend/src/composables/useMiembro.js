@@ -1,37 +1,63 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useGraphQL } from './useGraphQL'
+import { GET_MIEMBRO_BY_ID } from '@/graphql/queries/miembros.js'
 
 export function useMiembro() {
   const router = useRouter()
+  const { query } = useGraphQL()
   const loading = ref(false)
+  const error = ref(null)
   const miembro = ref({
     id: null,
     nombre: '',
     apellido1: '',
     apellido2: '',
+    sexo: '',
+    fechaNacimiento: null,
     email: '',
     telefono: '',
-    tipo_miembro_id: null,
-    agrupacion_id: null,
-    es_voluntario: false,
-    // ... otros campos
+    telefono2: '',
+    tipoDocumento: '',
+    numeroDocumento: '',
+    tipoMiembro: null,
+    estado: null,
+    motivoBajaRel: null,
+    motivoBajaTexto: '',
+    agrupacion: null,
+    fechaAlta: null,
+    fechaBaja: null,
+    direccion: '',
+    codigoPostal: '',
+    localidad: '',
+    provincia: null,
+    paisDomicilio: null,
+    iban: '',
+    esVoluntario: false,
+    disponibilidad: '',
+    horasDisponiblesSemana: null,
+    profesion: '',
+    nivelEstudios: '',
+    intereses: '',
+    observaciones: '',
+    solicitaSupresionDatos: false,
+    datosAnonimizados: false,
+    activo: true,
   })
 
   const fetchMiembro = async (id) => {
     loading.value = true
+    error.value = null
     try {
-      // Aquí iría la llamada a la API
-      console.log('Fetching miembro:', id)
-      // Simulación
-      miembro.value = {
-        id,
-        nombre: 'Juan',
-        apellido1: 'Pérez',
-        email: 'juan@ejemplo.com',
-        // ... otros datos
+      const data = await query(GET_MIEMBRO_BY_ID, { id })
+      if (data?.miembros && data.miembros.length > 0) {
+        miembro.value = data.miembros[0]
+      } else {
+        error.value = 'Miembro no encontrado'
       }
-    } catch (error) {
-      console.error('Error fetching miembro:', error)
+    } catch (err) {
+      console.error('Error fetching miembro:', err)
+      error.value = err.message || 'Error al cargar miembro'
     } finally {
       loading.value = false
     }
@@ -40,11 +66,12 @@ export function useMiembro() {
   const saveMiembro = async () => {
     loading.value = true
     try {
-      // Lógica de guardado
+      // TODO: Implementar mutation de guardado
       console.log('Saving miembro:', miembro.value)
       router.push('/miembros')
-    } catch (error) {
-      console.error('Error saving miembro:', error)
+    } catch (err) {
+      console.error('Error saving miembro:', err)
+      error.value = err.message || 'Error al guardar miembro'
     } finally {
       loading.value = false
     }
@@ -52,14 +79,15 @@ export function useMiembro() {
 
   const deleteMiembro = async (id) => {
     if (!confirm('¿Estás seguro de eliminar este miembro?')) return
-    
+
     loading.value = true
     try {
-      // Lógica de eliminación
+      // TODO: Implementar mutation de eliminación
       console.log('Deleting miembro:', id)
       router.push('/miembros')
-    } catch (error) {
-      console.error('Error deleting miembro:', error)
+    } catch (err) {
+      console.error('Error deleting miembro:', err)
+      error.value = err.message || 'Error al eliminar miembro'
     } finally {
       loading.value = false
     }
@@ -73,6 +101,7 @@ export function useMiembro() {
   return {
     miembro,
     loading,
+    error,
     nombreCompleto,
     fetchMiembro,
     saveMiembro,

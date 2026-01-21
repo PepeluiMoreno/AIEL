@@ -34,7 +34,6 @@ class AgrupacionTerritorial(Base):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True)
 
     # Identificación
-    codigo: Mapped[Optional[str]] = mapped_column(String(20), index=True)
     nombre: Mapped[str] = mapped_column(String(200), index=True)
     nombre_corto: Mapped[Optional[str]] = mapped_column(String(100))
 
@@ -89,7 +88,7 @@ class AgrupacionTerritorial(Base):
         )
 
     def __repr__(self) -> str:
-        return f"<AgrupacionTerritorial(codigo='{self.codigo}', nombre='{self.nombre}', tipo='{self.tipo}')>"
+        return f"<AgrupacionTerritorial(nombre='{self.nombre}', tipo='{self.tipo}')>"
 
     @property
     def telefono_principal(self) -> Optional[str]:
@@ -109,15 +108,14 @@ class AgrupacionTerritorial(Base):
         CREATE MATERIALIZED VIEW IF NOT EXISTS vista_agrupaciones_territoriales AS
         SELECT
             o.id,
-            o.codigo,
             o.nombre,
             o.nombre_corto,
             CASE
-                WHEN t.codigo = 'AGRUP_ESTATAL' THEN 'ESTATAL'
-                WHEN t.codigo = 'AGRUP_INTERNACIONAL' THEN 'INTERNACIONAL'
-                WHEN t.codigo = 'AGRUP_AUTONOMICA' THEN 'AUTONOMICA'
-                WHEN t.codigo = 'AGRUP_PROVINCIAL' THEN 'PROVINCIAL'
-                WHEN t.codigo = 'AGRUP_LOCAL' THEN 'LOCAL'
+                WHEN LOWER(t.nombre) LIKE '%estatal%' THEN 'ESTATAL'
+                WHEN LOWER(t.nombre) LIKE '%internacional%' THEN 'INTERNACIONAL'
+                WHEN LOWER(t.nombre) LIKE '%autonóm%' OR LOWER(t.nombre) LIKE '%autonom%' THEN 'AUTONOMICA'
+                WHEN LOWER(t.nombre) LIKE '%provincial%' THEN 'PROVINCIAL'
+                WHEN LOWER(t.nombre) LIKE '%local%' THEN 'LOCAL'
                 ELSE o.ambito
             END as tipo,
             o.organizacion_padre_id as agrupacion_padre_id,
@@ -138,7 +136,6 @@ class AgrupacionTerritorial(Base):
 
         -- Crear índices en la vista materializada
         CREATE UNIQUE INDEX IF NOT EXISTS idx_vista_agrup_id ON vista_agrupaciones_territoriales(id);
-        CREATE INDEX IF NOT EXISTS idx_vista_agrup_codigo ON vista_agrupaciones_territoriales(codigo);
         CREATE INDEX IF NOT EXISTS idx_vista_agrup_tipo ON vista_agrupaciones_territoriales(tipo);
         CREATE INDEX IF NOT EXISTS idx_vista_agrup_padre ON vista_agrupaciones_territoriales(agrupacion_padre_id);
         CREATE INDEX IF NOT EXISTS idx_vista_agrup_provincia ON vista_agrupaciones_territoriales(provincia_id);

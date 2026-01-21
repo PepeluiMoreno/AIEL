@@ -1,5 +1,5 @@
 <template>
-  <AppLayout title="Detalle del Miembro">
+  <AppLayout>
     <MiembroDetail />
   </AppLayout>
 </template>

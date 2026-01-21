@@ -16,7 +16,6 @@ class TipoGrupo(BaseModel):
     __tablename__ = 'tipos_grupo'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     es_permanente: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -26,7 +25,7 @@ class TipoGrupo(BaseModel):
     grupos = relationship('GrupoTrabajo', back_populates='tipo_grupo', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<TipoGrupo(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<TipoGrupo(nombre='{self.nombre}')>"
 
 
 class RolGrupo(BaseModel):
@@ -34,7 +33,6 @@ class RolGrupo(BaseModel):
     __tablename__ = 'roles_grupo'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
@@ -48,7 +46,7 @@ class RolGrupo(BaseModel):
     miembros_grupo = relationship('MiembroGrupo', back_populates='rol_grupo', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<RolGrupo(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<RolGrupo(nombre='{self.nombre}')>"
 
 
 class GrupoTrabajo(BaseModel):
@@ -56,7 +54,6 @@ class GrupoTrabajo(BaseModel):
     __tablename__ = 'grupos_trabajo'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
@@ -87,7 +84,7 @@ class GrupoTrabajo(BaseModel):
     reuniones = relationship('ReunionGrupo', back_populates='grupo', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<GrupoTrabajo(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<GrupoTrabajo(nombre='{self.nombre}')>"
 
     @property
     def presupuesto_disponible(self) -> Optional[Decimal]:

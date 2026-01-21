@@ -15,7 +15,6 @@ class CategoriaCompetencia(BaseModel):
     __tablename__ = 'categorias_competencia'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
@@ -24,7 +23,7 @@ class CategoriaCompetencia(BaseModel):
     competencias = relationship('Competencia', back_populates='categoria', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<CategoriaCompetencia(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<CategoriaCompetencia(nombre='{self.nombre}')>"
 
 
 class Competencia(BaseModel):
@@ -32,7 +31,6 @@ class Competencia(BaseModel):
     __tablename__ = 'competencias'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     categoria_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey('categorias_competencia.id'), nullable=False, index=True)
@@ -43,7 +41,7 @@ class Competencia(BaseModel):
     miembros_competencia = relationship('MiembroCompetencia', back_populates='competencia', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<Competencia(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<Competencia(nombre='{self.nombre}')>"
 
 
 class NivelCompetencia(BaseModel):
@@ -51,7 +49,6 @@ class NivelCompetencia(BaseModel):
     __tablename__ = 'niveles_competencia'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     orden: Mapped[int] = mapped_column(Integer, nullable=False)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
@@ -60,7 +57,7 @@ class NivelCompetencia(BaseModel):
     miembros_competencia = relationship('MiembroCompetencia', back_populates='nivel', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<NivelCompetencia(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<NivelCompetencia(nombre='{self.nombre}')>"
 
 
 class MiembroCompetencia(BaseModel):
@@ -89,7 +86,6 @@ class TipoDocumentoVoluntario(BaseModel):
     __tablename__ = 'tipos_documento_voluntario'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     requiere_caducidad: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -99,7 +95,7 @@ class TipoDocumentoVoluntario(BaseModel):
     documentos = relationship('DocumentoMiembro', back_populates='tipo_documento', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<TipoDocumentoVoluntario(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<TipoDocumentoVoluntario(nombre='{self.nombre}')>"
 
 
 class DocumentoMiembro(BaseModel):
@@ -141,7 +137,6 @@ class TipoFormacion(BaseModel):
     __tablename__ = 'tipos_formacion'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
 
@@ -149,7 +144,7 @@ class TipoFormacion(BaseModel):
     formaciones = relationship('FormacionMiembro', back_populates='tipo_formacion', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<TipoFormacion(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<TipoFormacion(nombre='{self.nombre}')>"
 
 
 class FormacionMiembro(BaseModel):

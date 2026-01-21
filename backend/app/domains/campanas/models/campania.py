@@ -16,7 +16,6 @@ class TipoCampania(BaseModel):
     __tablename__ = 'tipos_campania'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
@@ -25,7 +24,7 @@ class TipoCampania(BaseModel):
     campanias = relationship('Campania', back_populates='tipo_campania', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<TipoCampania(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<TipoCampania(nombre='{self.nombre}')>"
 
 
 class RolParticipante(BaseModel):
@@ -33,7 +32,6 @@ class RolParticipante(BaseModel):
     __tablename__ = 'roles_participante'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
 
     # Características del rol
@@ -46,7 +44,7 @@ class RolParticipante(BaseModel):
     participantes = relationship('ParticipanteCampania', back_populates='rol_participante', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<RolParticipante(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<RolParticipante(nombre='{self.nombre}')>"
 
 
 class Campania(BaseModel):
@@ -54,7 +52,6 @@ class Campania(BaseModel):
     __tablename__ = 'campanias'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     lema: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # Eslogan de la campaña
     descripcion_corta: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
@@ -92,7 +89,7 @@ class Campania(BaseModel):
     # Las donaciones están en financiero/models/donaciones.py con campania_id
 
     def __repr__(self) -> str:
-        return f"<Campania(codigo='{self.codigo}', nombre='{self.nombre}', estado_id='{self.estado_id}')>"
+        return f"<Campania(nombre='{self.nombre}', estado_id='{self.estado_id}')>"
 
 
 class ParticipanteCampania(BaseModel):

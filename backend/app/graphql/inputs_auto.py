@@ -109,7 +109,7 @@ class EstadoCuotaUpdateInput:
     pass
 
 
-@strawchemy.filter(EstadoCuota)
+@strawchemy.filter(EstadoCuota, include="all")
 class EstadoCuotaFilter:
     pass
 
@@ -124,7 +124,7 @@ class EstadoCampaniaUpdateInput:
     pass
 
 
-@strawchemy.filter(EstadoCampania)
+@strawchemy.filter(EstadoCampania, include="all")
 class EstadoCampaniaFilter:
     pass
 
@@ -303,7 +303,7 @@ class TipoMiembroUpdateInput:
     pass
 
 
-@strawchemy.filter(TipoMiembro)
+@strawchemy.filter(TipoMiembro, include="all")
 class TipoMiembroFilter:
     pass
 
@@ -318,7 +318,7 @@ class EstadoMiembroUpdateInput:
     pass
 
 
-@strawchemy.filter(EstadoMiembro)
+@strawchemy.filter(EstadoMiembro, include="all")
 class EstadoMiembroFilter:
     pass
 
@@ -333,7 +333,7 @@ class MotivoBajaUpdateInput:
     pass
 
 
-@strawchemy.filter(MotivoBaja)
+@strawchemy.filter(MotivoBaja, include="all")
 class MotivoBajaFilter:
     pass
 
@@ -348,7 +348,7 @@ class MiembroUpdateInput:
     pass
 
 
-@strawchemy.filter(Miembro)
+@strawchemy.filter(Miembro, include="all")
 class MiembroFilter:
     pass
 
@@ -440,7 +440,7 @@ class TipoActividadUpdateInput:
     pass
 
 
-@strawchemy.filter(TipoActividad)
+@strawchemy.filter(TipoActividad, include="all")
 class TipoActividadFilter:
     pass
 
@@ -455,7 +455,7 @@ class EstadoActividadUpdateInput:
     pass
 
 
-@strawchemy.filter(EstadoActividad)
+@strawchemy.filter(EstadoActividad, include="all")
 class EstadoActividadFilter:
     pass
 

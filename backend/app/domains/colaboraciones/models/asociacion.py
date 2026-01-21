@@ -16,7 +16,6 @@ class TipoAsociacion(BaseModel):
     __tablename__ = 'tipos_asociacion'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(20), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
@@ -25,7 +24,7 @@ class TipoAsociacion(BaseModel):
     asociaciones = relationship('Asociacion', back_populates='tipo', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<TipoAsociacion(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<TipoAsociacion(nombre='{self.nombre}')>"
 
 
 class Asociacion(BaseModel):
@@ -124,7 +123,6 @@ class EstadoConvenio(BaseModel):
     __tablename__ = 'estados_convenio'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(20), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     orden: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
@@ -134,7 +132,7 @@ class EstadoConvenio(BaseModel):
     convenios = relationship('Convenio', back_populates='estado', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<EstadoConvenio(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<EstadoConvenio(nombre='{self.nombre}')>"
 
 
 class Convenio(BaseModel):
@@ -156,7 +154,6 @@ class Convenio(BaseModel):
     )
 
     # Identificación del convenio
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(200), nullable=False)
     tipo: Mapped[str] = mapped_column(
         String(50),
@@ -206,7 +203,7 @@ class Convenio(BaseModel):
     estado = relationship('EstadoConvenio', back_populates='convenios', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<Convenio(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<Convenio(nombre='{self.nombre}')>"
 
     @property
     def esta_vigente(self) -> bool:

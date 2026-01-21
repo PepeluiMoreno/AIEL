@@ -23,7 +23,7 @@ from app.scripts.importacion.sql_dump_parser import SQLDumpParser
 
 
 # Ruta al archivo dump SQL
-DUMP_FILE_PATH = r"C:\Users\Jose\dev\AIEL\data\europalaica_com_2026_01_01 apertura de año.sql"
+DUMP_FILE_PATH = r"C:\Users\Jose\dev\SIGA\data\europalaica_com_2026_01_01 apertura de año.sql"
 
 
 class MapeadorAgrupaciones:
@@ -104,8 +104,19 @@ class MapeadorAgrupaciones:
 
         print("\nImportando agrupaciones territoriales principales...")
 
+        # Cargar agrupaciones existentes en la BD
+        result = await session.execute(
+            select(AgrupacionTerritorial.codigo, AgrupacionTerritorial.id)
+        )
+        for codigo, uuid_val in result:
+            if codigo:
+                self.mapeo_agrupaciones[codigo] = uuid_val
+
+        print(f"  [INFO] {len(self.mapeo_agrupaciones)} agrupaciones ya existentes en BD")
+
         importadas = 0
         omitidas = 0
+        existentes = 0
 
         for row in parser.extraer_inserts('AGRUPACIONTERRITORIAL'):
             # Estructura: 23 campos segun el CREATE TABLE
@@ -146,8 +157,9 @@ class MapeadorAgrupaciones:
                 omitidas += 1
                 continue
 
-            # Verificar si ya existe
+            # Verificar si ya existe en memoria (incluye BD)
             if codigo_str in self.mapeo_agrupaciones:
+                existentes += 1
                 continue
 
             # Mapear tipo
@@ -214,6 +226,8 @@ class MapeadorAgrupaciones:
                 print(f"  Procesadas {importadas} agrupaciones...")
 
         print(f"  [OK] {importadas} agrupaciones principales importadas")
+        if existentes > 0:
+            print(f"  [INFO] {existentes} agrupaciones ya existian")
         if omitidas > 0:
             print(f"  [WARN] {omitidas} registros omitidos")
 

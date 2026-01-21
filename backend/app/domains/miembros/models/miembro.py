@@ -20,20 +20,20 @@ class TipoMiembro(BaseModel):
     __tablename__ = 'tipos_miembro'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     # Características del tipo
     requiere_cuota: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     puede_votar: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    orden: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     activo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
 
     # Relaciones
     miembros = relationship('Miembro', back_populates='tipo_miembro', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<TipoMiembro(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<TipoMiembro(nombre='{self.nombre}')>"
 
 
 class Miembro(BaseModel):

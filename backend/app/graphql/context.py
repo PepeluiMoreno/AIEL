@@ -1,6 +1,7 @@
 """Contexto GraphQL con sesión de base de datos."""
 
 from dataclasses import dataclass
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from strawberry.fastapi import BaseContext
@@ -14,13 +15,21 @@ class Context(BaseContext):
     session: AsyncSession
 
 
-async def get_context() -> Context:
+async def get_context() -> AsyncGenerator[Context, None]:
     """
     Obtiene el contexto GraphQL con una sesión de base de datos.
 
-    Nota: La sesión se crea para cada request GraphQL.
-    El contexto de Strawberry maneja el ciclo de vida.
+    Usa un generador asíncrono para mantener la sesión abierta
+    durante toda la petición GraphQL. Strawberry FastAPI soporta
+    generadores asíncronos como context_getter.
+
+    IMPORTANTE: Hace commit automático al finalizar para persistir
+    los cambios de las mutations de Strawchemy.
     """
-    # async_session() es un async_sessionmaker, llamarlo crea una sesión
-    session = async_session()
-    return Context(session=session)
+    async with async_session() as session:
+        try:
+            yield Context(session=session)
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise

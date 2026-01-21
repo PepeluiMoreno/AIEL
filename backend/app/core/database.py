@@ -3,13 +3,10 @@ from sqlalchemy.orm import DeclarativeBase
 
 from .config import get_settings
 
+# PostgreSQL local - configuración simple sin pool complejo
 engine = create_async_engine(
     get_settings().database_url,
     echo=False,
-    connect_args={
-        "statement_cache_size": 0,
-        "prepared_statement_cache_size": 0,
-    }
 )
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 

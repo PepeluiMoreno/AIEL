@@ -1,11 +1,12 @@
 // Queries GraphQL para el módulo financiero
 // IMPORTANTE: Strawberry usa camelCase automáticamente
 // NO usar campos 'codigo' - solo se identifican por UUID
+// Strawchemy no usa limit/offset, usa filtros automáticos generados
 
 // Query para obtener cuotas anuales
 export const GET_CUOTAS_ANUALES = `
-  query CuotasAnuales($limit: Int, $offset: Int) {
-    cuotasAnuales(limit: $limit, offset: $offset) {
+  query CuotasAnuales {
+    cuotasAnuales {
       id
       ejercicio
       importe
@@ -53,8 +54,8 @@ export const GET_CUOTAS_BY_MIEMBRO = `
 
 // Query para obtener donaciones
 export const GET_DONACIONES = `
-  query Donaciones($limit: Int, $offset: Int) {
-    donaciones(limit: $limit, offset: $offset) {
+  query Donaciones {
+    donaciones {
       id
       fecha
       importe
@@ -95,8 +96,8 @@ export const GET_DONACION_CONCEPTOS = `
 
 // Query para obtener remesas
 export const GET_REMESAS = `
-  query Remesas($limit: Int, $offset: Int) {
-    remesas(limit: $limit, offset: $offset) {
+  query Remesas {
+    remesas {
       id
       referencia
       fechaCreacion
@@ -117,8 +118,8 @@ export const GET_REMESAS = `
 
 // Query para obtener órdenes de cobro
 export const GET_ORDENES_COBRO = `
-  query OrdenesCobro($limit: Int, $offset: Int) {
-    ordenesCobro(limit: $limit, offset: $offset) {
+  query OrdenesCobro {
+    ordenesCobro {
       id
       importe
       fechaProcesamiento

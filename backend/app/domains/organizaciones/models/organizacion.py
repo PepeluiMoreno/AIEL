@@ -30,7 +30,6 @@ class TipoOrganizacion(BaseModel, CatalogoMixin):
     protegidos y no pueden ser eliminados.
 
     Hereda de CatalogoMixin:
-    - codigo (String, unique, required)
     - nombre (String, required)
     - descripcion (String, optional)
     - orden (Integer, default 0)
@@ -42,7 +41,7 @@ class TipoOrganizacion(BaseModel, CatalogoMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
 
     # Los siguientes campos vienen de CatalogoMixin:
-    # - codigo, nombre, descripcion, orden, activo, es_sistema
+    # - nombre, descripcion, orden, activo, es_sistema
 
     # Categoría principal
     categoria: Mapped[str] = mapped_column(
@@ -61,7 +60,7 @@ class TipoOrganizacion(BaseModel, CatalogoMixin):
     organizaciones = relationship('Organizacion', back_populates='tipo', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<TipoOrganizacion(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<TipoOrganizacion(nombre='{self.nombre}')>"
 
 
 class Organizacion(BaseModel, ContactoCompletoMixin):
@@ -87,7 +86,6 @@ class Organizacion(BaseModel, ContactoCompletoMixin):
     )
 
     # Identificación básica
-    codigo: Mapped[Optional[str]] = mapped_column(String(20), unique=True, nullable=True, index=True)
     nombre: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     nombre_corto: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     siglas: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, index=True)
@@ -185,7 +183,6 @@ class EstadoConvenio(BaseModel):
     __tablename__ = 'estados_convenio'
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    codigo: Mapped[str] = mapped_column(String(20), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     orden: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
@@ -195,7 +192,7 @@ class EstadoConvenio(BaseModel):
     convenios = relationship('Convenio', back_populates='estado', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<EstadoConvenio(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<EstadoConvenio(nombre='{self.nombre}')>"
 
 
 class Convenio(BaseModel):
@@ -217,7 +214,6 @@ class Convenio(BaseModel):
     )
 
     # Identificación del convenio
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     nombre: Mapped[str] = mapped_column(String(200), nullable=False)
     tipo: Mapped[str] = mapped_column(
         String(50),
@@ -267,7 +263,7 @@ class Convenio(BaseModel):
     estado = relationship('EstadoConvenio', back_populates='convenios', lazy='selectin')
 
     def __repr__(self) -> str:
-        return f"<Convenio(codigo='{self.codigo}', nombre='{self.nombre}')>"
+        return f"<Convenio(nombre='{self.nombre}')>"
 
     @property
     def esta_vigente(self) -> bool:

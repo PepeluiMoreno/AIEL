@@ -50,7 +50,10 @@
             <th
               v-for="col in columnas"
               :key="col.key"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              :class="[
+                'px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider',
+                col.centered ? 'text-center' : 'text-left'
+              ]"
             >
               {{ col.label }}
             </th>
@@ -64,10 +67,24 @@
             <td
               v-for="col in columnas"
               :key="col.key"
-              class="px-6 py-4 whitespace-nowrap"
+              :class="[
+                'px-6 py-4',
+                col.type === 'multiline' ? '' : 'whitespace-nowrap',
+                col.centered ? 'text-center' : ''
+              ]"
             >
-              <!-- Tipo boolean -->
-              <template v-if="col.type === 'boolean'">
+              <!-- Tipo checkbox (visual) -->
+              <template v-if="col.type === 'checkbox'">
+                <svg v-if="item[col.key]" :class="['w-5 h-5 text-green-600', col.centered ? 'mx-auto' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <svg v-else :class="['w-5 h-5 text-gray-300', col.centered ? 'mx-auto' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </template>
+
+              <!-- Tipo boolean (texto Sí/No) - mantener por compatibilidad -->
+              <template v-else-if="col.type === 'boolean'">
                 <span
                   :class="[
                     'inline-flex px-2 py-1 text-xs font-medium rounded-full',
@@ -89,21 +106,34 @@
                 </div>
               </template>
 
-              <!-- Tipo activo (especial) -->
+              <!-- Tipo activo/en uso (especial) -->
               <template v-else-if="col.key === 'activo'">
-                <span
-                  :class="[
-                    'inline-flex px-2 py-1 text-xs font-medium rounded-full',
-                    item.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  ]"
-                >
-                  {{ item.activo ? 'Activo' : 'Inactivo' }}
+                <svg v-if="item.activo" class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <svg v-else class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </template>
+
+              <!-- Tipo texto multilinea (para descripciones) -->
+              <template v-else-if="col.type === 'multiline'">
+                <span class="text-sm text-gray-900 block max-w-xs whitespace-normal">
+                  {{ item[col.key] ?? '-' }}
                 </span>
               </template>
 
               <!-- Tipo texto normal -->
               <template v-else>
-                <span class="text-sm text-gray-900">{{ item[col.key] ?? '-' }}</span>
+                <!-- Si es columna nombre y tiene color, mostrar como badge -->
+                <span
+                  v-if="col.key === 'nombre' && item.color"
+                  class="inline-flex px-2 py-1 text-sm font-medium rounded-full text-gray-900"
+                  :style="{ backgroundColor: item.color + '30' }"
+                >
+                  {{ item[col.key] ?? '-' }}
+                </span>
+                <span v-else class="text-sm text-gray-900">{{ item[col.key] ?? '-' }}</span>
               </template>
             </td>
 
@@ -152,7 +182,12 @@
 
               <div class="space-y-4">
                 <div v-for="campo in campos" :key="campo.name">
-                  <label :for="campo.name" class="block text-sm font-medium text-gray-700 mb-1">
+                  <!-- Label solo para campos que no son checkbox -->
+                  <label
+                    v-if="campo.type !== 'checkbox'"
+                    :for="campo.name"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     {{ campo.label }}
                     <span v-if="campo.required" class="text-red-500">*</span>
                   </label>
@@ -272,17 +307,25 @@
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
-              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10" :class="errorEliminacion ? 'bg-amber-100' : 'bg-red-100'">
+                <svg v-if="errorEliminacion" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
+                <svg v-else class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
               </div>
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
-                  Eliminar {{ nombreSingular }}
+                  {{ errorEliminacion ? 'No se puede eliminar' : 'Eliminar ' + nombreSingular }}
                 </h3>
                 <div class="mt-2">
-                  <p class="text-sm text-gray-500">
+                  <!-- Mensaje de error -->
+                  <div v-if="errorEliminacion" class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <p class="text-sm text-amber-800">{{ errorEliminacion }}</p>
+                  </div>
+                  <!-- Confirmación normal -->
+                  <p v-else class="text-sm text-gray-500">
                     ¿Estás seguro de que deseas eliminar "{{ itemAEliminar?.nombre }}"?
                     Esta acción no se puede deshacer.
                   </p>
@@ -291,21 +334,34 @@
             </div>
           </div>
           <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-            <button
-              type="button"
-              @click="eliminar"
-              :disabled="eliminando"
-              class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm disabled:opacity-50"
-            >
-              {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
-            </button>
-            <button
-              type="button"
-              @click="modalEliminar = false"
-              class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm"
-            >
-              Cancelar
-            </button>
+            <!-- Si hay error, solo mostrar botón Cerrar -->
+            <template v-if="errorEliminacion">
+              <button
+                type="button"
+                @click="modalEliminar = false"
+                class="w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:w-auto sm:text-sm"
+              >
+                Cerrar
+              </button>
+            </template>
+            <!-- Si no hay error, mostrar botones normales -->
+            <template v-else>
+              <button
+                type="button"
+                @click="eliminar"
+                :disabled="eliminando"
+                class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm disabled:opacity-50"
+              >
+                {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
+              </button>
+              <button
+                type="button"
+                @click="modalEliminar = false"
+                class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm"
+              >
+                Cancelar
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -330,6 +386,7 @@ const props = defineProps({
   mutationDelete: { type: String, default: null },
   columnas: { type: Array, required: true },
   campos: { type: Array, required: true },
+  orderBy: { type: String, default: null },
 })
 
 const emit = defineEmits(['created', 'updated', 'deleted'])
@@ -344,6 +401,7 @@ const itemAEliminar = ref(null)
 const guardando = ref(false)
 const eliminando = ref(false)
 const formulario = ref({})
+const errorEliminacion = ref(null)
 
 // Inicializar formulario con valores por defecto
 const inicializarFormulario = () => {
@@ -366,7 +424,19 @@ const cargarDatos = async () => {
   try {
     const data = await query(props.queryString)
     if (data && data[props.queryName]) {
-      items.value = data[props.queryName]
+      let resultado = data[props.queryName]
+      // Ordenar si se especifica orderBy
+      if (props.orderBy) {
+        resultado = [...resultado].sort((a, b) => {
+          const valA = a[props.orderBy]
+          const valB = b[props.orderBy]
+          if (typeof valA === 'number' && typeof valB === 'number') {
+            return valA - valB
+          }
+          return String(valA).localeCompare(String(valB))
+        })
+      }
+      items.value = resultado
     }
   } catch (err) {
     console.error('Error cargando datos:', err)
@@ -425,6 +495,7 @@ const guardar = async () => {
 
 const confirmarEliminar = (item) => {
   itemAEliminar.value = item
+  errorEliminacion.value = null
   modalEliminar.value = true
 }
 
@@ -432,10 +503,11 @@ const eliminar = async () => {
   if (!props.mutationDelete || !itemAEliminar.value) return
 
   eliminando.value = true
+  errorEliminacion.value = null
   try {
-    // Strawchemy delete usa filter con id._eq
+    // Strawchemy delete usa filter con id.eq (sin guión bajo)
     await mutation(props.mutationDelete, {
-      filter: { id: { _eq: itemAEliminar.value.id } }
+      filter: { id: { eq: itemAEliminar.value.id } }
     })
     emit('deleted', itemAEliminar.value)
     modalEliminar.value = false
@@ -443,7 +515,13 @@ const eliminar = async () => {
     await cargarDatos()
   } catch (err) {
     console.error('Error eliminando:', err)
-    alert('Error al eliminar: ' + err.message)
+    // Detectar error de FK (registro en uso)
+    const errorMsg = err.message || ''
+    if (errorMsg.includes('ForeignKeyViolation') || errorMsg.includes('viola la llave foránea')) {
+      errorEliminacion.value = `No se puede eliminar "${itemAEliminar.value?.nombre}" porque está siendo utilizado por otros registros del sistema. Para deshabilitarlo, edítalo y desmarca la opción "En uso".`
+    } else {
+      errorEliminacion.value = 'Error al eliminar: ' + errorMsg
+    }
   } finally {
     eliminando.value = false
   }
